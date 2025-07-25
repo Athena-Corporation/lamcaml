@@ -28,6 +28,14 @@ I : Expression -> Value -> Value
 
 type expr = Error | Num of int | Add of expr * expr
 
+let rec equal e e' =
+  match (e, e') with
+  | (Error, Error) -> true
+  | (Num n, Num m) -> Int.equal n m
+  | (Add (e1, e2), Add(g1, g2)) ->
+    equal e1 g1 && equal e2 g2
+  | _ -> false
+
 (* 0 + 0 *)
 let example = Add (Num 9, Num 0)
 
@@ -35,16 +43,16 @@ let rec interpreter (e : expr) : expr =
   match e with
   | Error -> Error
   | Num x -> Num x
-  | Add (x, y) -> 
-    match (interpreter x, interpreter y) with 
+  | Add (x, y) ->
+    match (interpreter x, interpreter y) with
     | (Num a, Num b) -> Num (a + b)
     | _ -> Error
 
-let rec int_of_expr (e: expr) : int = 
-  match e with 
+let rec int_of_expr (e: expr) : int =
+  match e with
   | Num x -> x
   | _ -> 000
 
-let () = 
+let () =
   let result = interpreter example in
   print_endline (string_of_int (int_of_expr result))
