@@ -61,8 +61,8 @@ let rec equal_expr e1 e2 : bool =
 let rec string_of_expr e =
   match e with
   | Var x -> x
-  | App (e1, e2) -> "(" ^ string_of_expr e1 ^ " " ^ string_of_expr e2 ^ ")"
-  | Lam (x, body) -> "λ" ^ x ^ "." ^ string_of_expr body
+  | App (e1, e2) -> "(" ^ string_of_expr e1 ^ "•" ^ string_of_expr e2 ^ ")"
+  | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
 
 
 (* Exercise 1. Implement subterms. *)
@@ -72,6 +72,7 @@ let rec sub_term e : expr list =
   | Var _ -> [e]
   | App (e1, e2) -> e :: (sub_term e1 @ sub_term e2)
   | Lam (_, body) -> e :: sub_term body
+
 
 let rec print_list lst =
   match lst with
