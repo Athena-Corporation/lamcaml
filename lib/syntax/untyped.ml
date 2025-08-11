@@ -46,21 +46,14 @@ type expr =
   | App of expr * expr
   | Lam of string * expr
 
-
-let e1 = Lam ("x", App (Var "x", Var "x"))
-let e2 = Lam ("x", App (Var "x", Var "x"))
-let e3 = Lam ("y", App (Var "y", Var "u"))
-let e4 = Lam ("x", App (Var "x", Var "y"))
-let e5 = App (Var "x", Var "x")
-let e6 = App (Var "x", Var "y")
-
 (* Exercise 0. Implement syntactical identity is a predicate. *)
 (* Notation 1.3.4 *)
 let rec equal_expr e1 e2 : bool =
+  let open String in (* locally open strings *)
   match e1, e2 with
-  | Var x, Var y -> x = y
+  | Var x, Var y -> equal x y
   | App (l1, r1), App (l2, r2) -> equal_expr l1 l2 && equal_expr r1 r2
-  | Lam (x1, b1), Lam (x2, b2) -> x1 = x2 && equal_expr b1 b2
+  | Lam (x1, b1), Lam (x2, b2) -> equal x1 x2 && equal_expr b1 b2
   | _ -> false
 
 
@@ -88,39 +81,27 @@ let rec print_list lst =
       print_endline (string_of_expr h);
       print_list t
 
-let () =
-  print_endline (string_of_bool (equal_expr e3 e2));  
-  print_endline (string_of_bool (equal_expr e2 e1));  
-  print_endline (string_of_bool (equal_expr e4 e1));;
 
-let () =
-  print_list (sub_term e1);
-  print_list (sub_term e2);
-  print_list (sub_term e3)
 
 
 (* Ex. 2. Implement a predicate (function that the output type is boolean) for proper subterms.*)
 (* Definition 1.3.8 *)
 
-let rec is_subterm x y : bool = 
-  equal_expr x y || 
-  match y with 
-  | Var _ -> false 
-  | App (l, r) -> is_subterm x l || is_subterm x r 
+let rec is_subterm x y : bool =
+  equal_expr x y ||
+  match y with
+  | Var _ -> false
+  | App (l, r) -> is_subterm x l || is_subterm x r
   | Lam (_, body) -> is_subterm x body
 
 
-let is_proper_subterm e1 e2 = 
+let is_proper_subterm e1 e2 =
   is_subterm e2 e1 && not (equal_expr e1 e2)
 
-let () = 
-  print_endline (string_of_bool (is_subterm e5 e1));
-  print_endline (string_of_bool (is_subterm e6 e1));
-  print_endline (string_of_bool (is_proper_subterm e1 e2));
-  print_endline (string_of_bool (is_proper_subterm e1 e5))
 
 
- 
+
+
 (* Section 1.4 - Free and Bound Variables. -----------------------*)
 
 (* Ex. 3. Implement Definition 1.4.1 *)
