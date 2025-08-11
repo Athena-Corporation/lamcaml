@@ -10,7 +10,6 @@ let e6 = App (Var "x", Var "y")
 let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 
-
 let () =
   string_of_expr e1  |> print_endline ;
   string_of_expr id2 |> print_endline
