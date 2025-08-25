@@ -99,12 +99,21 @@ let is_proper_subterm e1 e2 =
   is_subterm e2 e1 && not (equal_expr e1 e2)
 
 
-
-
-
 (* Section 1.4 - Free and Bound Variables. -----------------------*)
 
 (* Ex. 3. Implement Definition 1.4.1 *)
+let rec free_vars exp = 
+  match exp with 
+  | Var x -> [x] 
+  | App (x1, x2) -> free_vars x1 @ free_vars x2
+  | Lam (x, body) -> List.filter(fun y -> y <> x) (free_vars body)
+
+let rec bound_vars exp = 
+  match exp with 
+  | Var x -> []
+  | App (x1, x2) -> bound_vars x1 @ bound_vars x2
+  | Lam (x, body) -> x :: bound_vars body 
 
 (* Ex. 4. Implement a predicate for closed terms. *)
 (* Definition 1.4.3 *)
+
