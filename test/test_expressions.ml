@@ -1,4 +1,56 @@
 (*
+α-equivalence
+
+λ-terms: x | s t | λ x. t
+
+
+1. Goal: "model/implement" functional application
+
+f(x) = x + y        => λ x . x + y
+
+f(5) = 5 + y        => (λ x. x + y) 5 →? 5 + y
+
+What is needed for this implementation?
+
+Let us apply f(5), step-by-step:
+1. pen-and-paper: Notice that to apply f(5) we substitute in the body of the function
+f wich is "x + y" all occurrences of x by 5.
+2. The result is 5 + y.
+
+λ x . x + y => λ x. M where M = x + y
+
+A substitution as a function from variables to terms.
+[x := t]
+
+Definitin of substitution:
+
+- x [ x := N] = N ,
+- y [ x := N] = y
+- (M N) [ x := L] = (M [x := L]) (N [ x := L])
+- lambda case? NEXT MEETING AS IT IS MORE COMPLICATED
+
+- example: (x + y) [x := 5] = (x [x := 5]) + (y [x := 5])
+                              = (5) + y
+
+
+f(x) = x + 1 | f(y) = y + 1 | f(z) = z + 1
+
+
+
+*)
+
+
+
+
+
+
+
+
+
+
+
+
+(*
 
 Language Semantics and Implementation
 
