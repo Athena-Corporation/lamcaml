@@ -116,4 +116,8 @@ let rec bound_vars exp =
 
 (* Ex. 4. Implement a predicate for closed terms. *)
 (* Definition 1.4.3 *)
+let combinator exp = 
+  match free_vars exp with 
+  | [] -> true 
+  | _ -> false 
 
