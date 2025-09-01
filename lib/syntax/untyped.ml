@@ -113,8 +113,23 @@ let rec bound_vars exp =
 
 (* Ex. 4. Implement a predicate for closed terms. *)
 (* Definition 1.4.3 *)
-let combinator exp = 
-  match free_vars exp with 
-  | [] -> true 
-  | _ -> false 
+let combinator exp =
+  match free_vars exp with
+  | [] -> true
+  | _ -> false
 
+(* Variables and renaming *)
+
+(*
+
+Ex. 5 - Implement a predicate, i.e., a function from a type to booleans,
+that given two terms s and t as input returns true if s is α-equivalent to t.
+(In the book this is basically Def. 1.5.2).
+Hint: you need to also implement renaming (Def. 1.5.1)
+
+  Ex. 5.(A). Compute the examples in Example 1.5.3.
+
+Ex. 6 - Implement Substitution: Def. 1.6.1.
+  Hint Question: what is a good data structure for substitutions?
+
+*)
