@@ -16,6 +16,9 @@ let id2 = Lam ("y", (Var "y"))
 *)
 
 
+let () =
+  print_endline (string_of_bool (is_alpha e1 e2));
+  print_endline (string_of_bool (is_alpha e1 e7))
 
 
 
