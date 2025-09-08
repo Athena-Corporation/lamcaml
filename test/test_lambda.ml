@@ -3,21 +3,27 @@ open Utils.Lsps
 
 let e1 = Lam ("x", App (Var "x", Var "y"))
 let e2 = Lam ("x", App (Var "x", Var "x"))
+let e7 = Lam ("z", App (Var "z", Var "y"))
 
 (*
+let e2 = Lam ("x", App (Var "x", Var "x"))
 let e3 = Lam ("y", App (Var "y", Var "u"))
 let e4 = Lam ("x", App (Var "x", Var "y"))
 let e5 = App (Var "x", Var "x")
 let e6 = App (Var "x", Var "y")
-
 let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 *)
 
+
+
+
+
+(*
 let () =
   print_endline (string_of_bool (combinator e1));
   print_endline (string_of_bool (combinator e2))
-
+*)
 
 (*
 let() = 

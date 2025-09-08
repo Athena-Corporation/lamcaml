@@ -127,7 +127,23 @@ that given two terms s and t as input returns true if s is α-equivalent to t.
 (In the book this is basically Def. 1.5.2).
 Hint: you need to also implement renaming (Def. 1.5.1)
 
+ *)
+let rec rename (e: expr) (oldn: string) (nwn : string) : expr = 
+  match e with 
+  | Var x -> if x = oldn then Var nwn else Var x 
+  | App (x1, x2) -> App (rename x1 oldn nwn, rename x2 oldn nwn)
+  | Lam (x1, body) -> if x1 = oldn then Lam (nwn, rename body oldn nwn) else Lam (x1, rename body oldn nwn)  
+
+let rec is_alpha (e1: expr) (e2: expr) : bool = 
+  match (e1,e2) with 
+  | Var x, Var y -> x = y
+  | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
+  | Lam (x1, x2), Lam (y1, y2) -> if x1 = y1 then is_alpha x2 y2 else is_alpha x2 (rename y2 y1 x1)
+  | _ -> false
+
+(*
   Ex. 5.(A). Compute the examples in Example 1.5.3.
+
 
 Ex. 6 - Implement Substitution: Def. 1.6.1.
   Hint Question: what is a good data structure for substitutions?
