@@ -1,11 +1,10 @@
 open Syntax.Untyped
 open Utils.Lsps
 
+(*
 let e1 = Lam ("x", App (Var "x", Var "y"))
 let e2 = Lam ("x", App (Var "x", Var "x"))
 let e7 = Lam ("z", App (Var "z", Var "y"))
-
-(*
 let e2 = Lam ("x", App (Var "x", Var "x"))
 let e3 = Lam ("y", App (Var "y", Var "u"))
 let e4 = Lam ("x", App (Var "x", Var "y"))
@@ -15,11 +14,35 @@ let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 *)
 
+(* Ex. 5.(A). Compute the examples in Example 1.5.3.
 
+let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
+let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
+let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "z")
+let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "z")
+let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "z")
+let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v")
+
+let () =
+  print_endline (string_of_bool (is_alpha f1 f1));
+  print_endline (string_of_bool (is_alpha f1 f2));
+  print_endline (string_of_bool (is_alpha f1 f3));
+  print_endline (string_of_bool (is_alpha f1 f4));
+  print_endline (string_of_bool (is_alpha f1 f5));
+
+  *)
+
+
+
+
+
+
+
+(*
 let () =
   print_endline (string_of_bool (is_alpha e1 e2));
   print_endline (string_of_bool (is_alpha e1 e7))
-
+*)
 
 
 (*
