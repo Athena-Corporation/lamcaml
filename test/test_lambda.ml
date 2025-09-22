@@ -14,6 +14,19 @@ let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 *)
 
+(* λ x. x y let us rename y to z *)
+
+
+let e1 = Lam ("x", App (Var "x", Var "y"))
+let e2 = Lam ("x", App(Var "x", Var "y"))
+
+
+let () =
+  print_endline (string_of_bool (equal_expr e1 e2)) ;
+  print_endline (string_of_bool (is_alpha e1 e2))
+  (* print_endline (string_of_expr (rename e "y" "x")) *)
+
+
 (* Ex. 5.(A). Compute the examples in Example 1.5.3.
 
 let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
@@ -52,7 +65,7 @@ let () =
 *)
 
 (*
-let() = 
+let() =
   print_endline( "Free: " ^ String.concat "," (free_vars e1));
   print_endline( "Bound: " ^ String.concat "," (bound_vars e1))
 *)
