@@ -43,7 +43,7 @@ let() =
   print_int (length (gen_list f1));
   print_newline();
   print_endline (string_of_bool (check_var "x1" (gen_list f1)));
-  print_endline (string_of_expr (gen_new_name "x7" (gen_list f1)))
+  print_endline (gen_new_name "x7" (gen_list f1))
 
 
   
@@ -57,8 +57,8 @@ let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "
 
 let () =
   print_endline (string_of_bool (is_alpha f1 f1));
-  print_endline (string_of_bool (is_alpha f1 f2));
-  print_endline (string_of_bool (is_alpha f1 f4));
+  print_endline (string_of_bool (is_alpha f1 f2));      Took out is_aplha, it is commented, make sure to implement it back
+  print_endline (string_of_bool (is_alpha f1 f4));               when you test
   print_endline (string_of_bool (is_alpha f1 f5));   (* should be false but is true*)
   print_endline (string_of_bool (is_alpha f1 f6));
 *)

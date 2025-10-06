@@ -163,7 +163,7 @@ let rec rename (e: expr) (oldn: string) (nwn : string) : expr =
     " is not fresh in " ^ (string_of_expr e)
   )
 
-(* Challange: how to generate a new name such that is_fresh of the new name that we generate will give true. *)
+(* Challange: how to generate a new name such that is_fresh of the new name that we generate will give true. 
 let rec is_alpha (e1: expr) (e2: expr) : bool =
   match (e1,e2) with
   | Var x, Var y -> x = y
@@ -173,7 +173,7 @@ let rec is_alpha (e1: expr) (e2: expr) : bool =
     else is_alpha v1 (Lam (y, rename e2 y x))      (* It discards the outside lambda z make it so that it doesn't do that*)
   | _ -> false
 
-
+*)
 
 let rec gen_list (e: expr) : string list = 
   match e with 
@@ -199,16 +199,16 @@ let rec check_var opfst (lst: string list) : bool =
   | [] -> false
   | h :: t -> h = opfst || check_var opfst t 
 
-let rec gen_new_name (opfst: string) (lst: string list) : expr =
+let rec gen_new_name (opfst: string) (lst: string list) : string =
   if check_var opfst lst then
     let rec unique n =
       let nwn = opfst ^ string_of_int n in
       if check_var nwn lst then unique (n + 1)
-      else Var nwn
+      else nwn
     in
     unique 1
   else
-    Var opfst
+    opfst
 
 (*  Make it so that after the new variable is created it then replaces it in the old expr
     you can do this by:
