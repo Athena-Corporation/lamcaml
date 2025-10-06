@@ -108,3 +108,39 @@ let rec int_of_expr (e: expr) : int =
 let () =
   let result = interpreter example in
   print_endline (string_of_int (int_of_expr result))
+
+
+
+
+
+
+
+
+
+(* Back up *)
+
+(* 
+let rec rename_check (e:expr) (oldn: string) (nwn:string) : bool =
+  match e with
+  |Var x -> if x = oldn then x = nwn else false
+  |App (x1, x2) -> rename_check x1 oldn nwn || rename_check x2 oldn nwn
+  |Lam (x1, body) -> if x1 = oldn then x1 = nwn else false || rename_check body oldn nwn
+
+let rec rename (e: expr) (oldn: string) (nwn : string) : expr = 
+  if not (rename_check e oldn nwn) then e else 
+    match e with 
+    | Var x -> if x = oldn then Var nwn else Var x 
+    | App (x1, x2) -> App (rename x1 oldn nwn, rename x2 oldn nwn)
+    | Lam (x1, body) -> if x1 = oldn then Lam (nwn, rename body oldn nwn) else Lam (x1, rename body oldn nwn)  let rec rename_check (e:expr) (oldn: string) (nwn:string) : bool =
+  match e with
+  |Var x -> if x = oldn then x = nwn else false
+  |App (x1, x2) -> rename_check x1 oldn nwn || rename_check x2 oldn nwn
+  |Lam (x1, body) -> if x1 = oldn then x1 = nwn else false || rename_check body oldn nwn
+
+let rec rename (e: expr) (oldn: string) (nwn : string) : expr = 
+  if not (rename_check e oldn nwn) then e else 
+    match e with 
+    | Var x -> if x = oldn then Var nwn else Var x 
+    | App (x1, x2) -> App (rename x1 oldn nwn, rename x2 oldn nwn)
+    | Lam (x1, body) -> if x1 = oldn then Lam (nwn, rename body oldn nwn) else Lam (x1, rename body oldn nwn)  
+*)

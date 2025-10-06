@@ -1,5 +1,5 @@
 open Syntax.Untyped
-open Utils.Lsps
+
 
 (*
 let e1 = Lam ("x", App (Var "x", Var "y"))
@@ -14,36 +14,57 @@ let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 *)
 
-(* λ x. x y let us rename y to z *)
-
+(* λ x. x y let us rename y to z
 
 let e1 = Lam ("x", App (Var "x", Var "y"))
 let e2 = Lam ("x", App(Var "x", Var "y"))
 
 
 let () =
-  print_endline (string_of_bool (equal_expr e1 e2)) ;
-  print_endline (string_of_bool (is_alpha e1 e2))
-  (* print_endline (string_of_expr (rename e "y" "x")) *)
+  print_endline(string_of_expr(rename e1 "y" "z"));
+   print_endline(string_of_expr(rename e1 "x" "z"))
+
+*)
+
+(* Ex. 5.(A). Compute the examples in Example 1.5.3. 
 
 
-(* Ex. 5.(A). Compute the examples in Example 1.5.3.
+special case 
+print_endline (string_of_bool (is_alpha f1 f3));
 
-let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
+
+*)
+
+
+let f1 = App(Lam ("x7", App (Var "x7", Lam ("z", App (Var "x7", Var "y")))), Var "z")
+
+let() = 
+  print_endline(print_strlst(gen_list f1)); 
+  print_int (length (gen_list f1));
+  print_newline();
+  print_endline (string_of_bool (check_var "x1" (gen_list f1)));
+  print_endline (string_of_expr (gen_new_name "x7" (gen_list f1)))
+
+
+  
+(*
 let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
 let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "z")
 let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "z")
 let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "z")
 let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v")
 
+
 let () =
   print_endline (string_of_bool (is_alpha f1 f1));
   print_endline (string_of_bool (is_alpha f1 f2));
-  print_endline (string_of_bool (is_alpha f1 f3));
   print_endline (string_of_bool (is_alpha f1 f4));
-  print_endline (string_of_bool (is_alpha f1 f5));
+  print_endline (string_of_bool (is_alpha f1 f5));   (* should be false but is true*)
+  print_endline (string_of_bool (is_alpha f1 f6));
+*)
 
-  *)
+
+
 
 
 
