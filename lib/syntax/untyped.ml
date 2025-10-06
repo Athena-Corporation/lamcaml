@@ -74,12 +74,19 @@ let rec sub_term e : expr list =
   | Lam (_, body) -> e :: sub_term body
 
 
+(* print a list of expressions *)
 let rec print_list lst =
   match lst with
   | [] -> ()
   | h :: t ->
       print_endline (string_of_expr h);
       print_list t
+
+let rec print_strlst (l: string list) : string =
+  match l with
+  | [] -> ""
+  | [x] -> x
+  | h :: t -> h ^ "," ^ print_strlst t
 
 (* Ex. 2. Implement a predicate (function that the output type is boolean) for proper subterms.*)
 (* Definition 1.3.8 *)
@@ -148,8 +155,9 @@ free occurrence of the name [oldn] with the argument name [nwm].
 
 @Error the function exists with error if the new name is not fresh.
 *)
-let rec rename (e: expr) (oldn: string) (nwn : string) : expr =
-  if is_fresh e nwn then
+let rec rename (e: expr) (oldn: string) : expr =
+  failwith "Not implemented yet"
+  (* if is_fresh e nwn then
     match e with
     | (Var x) as v ->
       if x = oldn then Var nwn else v
@@ -157,26 +165,26 @@ let rec rename (e: expr) (oldn: string) (nwn : string) : expr =
     | Lam (x, body) ->
       Lam (x, rename body oldn nwn)
   else
-  failwith ( 
+  failwith (
     "Renaming impossible as the new name " ^
     nwn ^
     " is not fresh in " ^ (string_of_expr e)
-  )
+  ) *)
 
-(* Challange: how to generate a new name such that is_fresh of the new name that we generate will give true. 
+(* Challange: how to generate a new name such that is_fresh of the new name that we generate will give true.
 let rec is_alpha (e1: expr) (e2: expr) : bool =
   match (e1,e2) with
   | Var x, Var y -> x = y
   | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
-  | Lam (x, e1) as v1 , Lam (y, e2) ->  
-    if x = y then is_alpha e1 e2 
+  | Lam (x, e1) as v1 , Lam (y, e2) ->
+    if x = y then is_alpha e1 e2
     else is_alpha v1 (Lam (y, rename e2 y x))      (* It discards the outside lambda z make it so that it doesn't do that*)
   | _ -> false
 
 *)
 
-let rec gen_list (e: expr) : string list = 
-  match e with 
+let rec gen_list (e: expr) : string list =
+  match e with
   | Var x -> x :: []
   | App (l ,r) -> gen_list l @ gen_list r @ []
   | Lam (x, body) -> x :: gen_list body @ []
@@ -187,17 +195,13 @@ let rec length (l: string list) =
   | _ :: t -> 1 + length t
 
 
-let rec print_strlst (l: string list) : string = 
-  match l with 
-  | [] -> ""
-  | [x] -> x 
-  | h :: t -> h ^ "," ^ print_strlst t
+
 
 
 let rec check_var opfst (lst: string list) : bool =
-  match lst with 
+  match lst with
   | [] -> false
-  | h :: t -> h = opfst || check_var opfst t 
+  | h :: t -> h = opfst || check_var opfst t
 
 let rec gen_new_name (opfst: string) (lst: string list) : string =
   if check_var opfst lst then
@@ -213,7 +217,7 @@ let rec gen_new_name (opfst: string) (lst: string list) : string =
 (*  Make it so that after the new variable is created it then replaces it in the old expr
     you can do this by:
     Pattern mathcing and seeing where in the expr the old variable was
-    Then use PAT MATCH to replace it with a new variable 
+    Then use PAT MATCH to replace it with a new variable
 
 
 A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e. *)

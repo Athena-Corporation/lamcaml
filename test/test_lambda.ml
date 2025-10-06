@@ -1,4 +1,5 @@
 open Syntax.Untyped
+open Utils.List
 
 
 (*
@@ -26,10 +27,10 @@ let () =
 
 *)
 
-(* Ex. 5.(A). Compute the examples in Example 1.5.3. 
+(* Ex. 5.(A). Compute the examples in Example 1.5.3.
 
 
-special case 
+special case
 print_endline (string_of_bool (is_alpha f1 f3));
 
 
@@ -38,15 +39,16 @@ print_endline (string_of_bool (is_alpha f1 f3));
 
 let f1 = App(Lam ("x7", App (Var "x7", Lam ("z", App (Var "x7", Var "y")))), Var "z")
 
-let() = 
-  print_endline(print_strlst(gen_list f1)); 
+let() =
+  (* print_endline(print_strlst(gen_list f1)); *)
+  print_endline (list_to_string (fun x -> x) (gen_list f1));
   print_int (length (gen_list f1));
   print_newline();
   print_endline (string_of_bool (check_var "x1" (gen_list f1)));
   print_endline (gen_new_name "x7" (gen_list f1))
 
 
-  
+
 (*
 let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
 let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "z")
