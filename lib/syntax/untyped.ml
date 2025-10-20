@@ -40,14 +40,11 @@ With that, an expression is:
 Implement this.
 *)
 
-(* Expressions, this is def. 1.3.2 from the book. *)
 type expr =
   | Var of string
   | App of expr * expr
   | Lam of string * expr
 
-(* Exercise 0. Implement syntactical identity is a predicate. *)
-(* Notation 1.3.4 *)
 let rec equal_expr e1 e2 : bool =
   let open String in (* locally open strings *)
   match e1, e2 with
@@ -56,8 +53,6 @@ let rec equal_expr e1 e2 : bool =
   | Lam (x1, b1), Lam (x2, b2) -> equal x1 x2 && equal_expr b1 b2
   | _ -> false
 
-
-(* Pretty printer for expr *)
 let rec string_of_expr e =
   match e with
   | Var x -> x
@@ -65,31 +60,11 @@ let rec string_of_expr e =
   | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
 
 
-(* Exercise 1. Implement subterms. *)
-(* Definition 1.3.5 *)
 let rec sub_term e : expr list =
   match e with
   | Var _ -> [e]
   | App (e1, e2) -> e :: (sub_term e1 @ sub_term e2)
   | Lam (_, body) -> e :: sub_term body
-
-
-(* print a list of expressions *)
-let rec print_list lst =
-  match lst with
-  | [] -> ()
-  | h :: t ->
-      print_endline (string_of_expr h);
-      print_list t
-
-let rec print_strlst (l: string list) : string =
-  match l with
-  | [] -> ""
-  | [x] -> x
-  | h :: t -> h ^ "," ^ print_strlst t
-
-(* Ex. 2. Implement a predicate (function that the output type is boolean) for proper subterms.*)
-(* Definition 1.3.8 *)
 
 let rec is_subterm x y : bool =
   equal_expr x y ||
@@ -102,10 +77,6 @@ let rec is_subterm x y : bool =
 let is_proper_subterm e1 e2 =
   is_subterm e2 e1 && not (equal_expr e1 e2)
 
-
-(* Section 1.4 - Free and Bound Variables. -----------------------*)
-
-(* Ex. 3. Implement Definition 1.4.1 *)
 let rec free_vars exp =
   match exp with
   | Var x -> [x]
@@ -118,69 +89,18 @@ let rec bound_vars exp =
   | App (x1, x2) -> bound_vars x1 @ bound_vars x2
   | Lam (x, body) -> x :: bound_vars body
 
-(* Ex. 4. Implement a predicate for closed terms. *)
-(** Definition 1.4.3 *)
 let combinator exp =
   match free_vars exp with
   | [] -> true
   | _ -> false
 
+
+
 (* Variables and renaming *)
-
-(*
-
-Ex. 5 - Implement a predicate, i.e., a function from a type to booleans,
-that given two terms s and t as input returns true if s is α-equivalent to t.
-(In the book this is basically Def. 1.5.2).
-Hint: you need to also implement renaming (Def. 1.5.1)
-
- *)
 
 (** This function checks whether the new name nwn is valid
 (fresh = doesn't occur anywhere in in the expression).This function satisfy the following:
   - it only returns true if the "name" argument is completely new.
-*)
-let rec is_fresh (e : expr) (name : string) : bool =
-  match e with
-  | Var x ->
-    if x = name then false else true
-  | App(l, r) ->
-    is_fresh l name && is_fresh r name
-  | Lam (x, e') ->
-    if x = name then false else is_fresh e' name
-
-(**
-[rename e oldn nwn] is the expression [e'] resulting from replacing {b}every{b}
-free occurrence of the name [oldn] with the argument name [nwm].
-
-@Error the function exists with error if the new name is not fresh.
-*)
-let rec rename (e: expr) (oldn: string) : expr =
-  failwith "Not implemented yet"
-  (* if is_fresh e nwn then
-    match e with
-    | (Var x) as v ->
-      if x = oldn then Var nwn else v
-    | App (l, r) -> App (rename l oldn nwn, rename r oldn nwn)
-    | Lam (x, body) ->
-      Lam (x, rename body oldn nwn)
-  else
-  failwith (
-    "Renaming impossible as the new name " ^
-    nwn ^
-    " is not fresh in " ^ (string_of_expr e)
-  ) *)
-
-(* Challange: how to generate a new name such that is_fresh of the new name that we generate will give true.
-let rec is_alpha (e1: expr) (e2: expr) : bool =
-  match (e1,e2) with
-  | Var x, Var y -> x = y
-  | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
-  | Lam (x, e1) as v1 , Lam (y, e2) ->
-    if x = y then is_alpha e1 e2
-    else is_alpha v1 (Lam (y, rename e2 y x))      (* It discards the outside lambda z make it so that it doesn't do that*)
-  | _ -> false
-
 *)
 
 let rec gen_list (e: expr) : string list =
@@ -189,19 +109,15 @@ let rec gen_list (e: expr) : string list =
   | App (l ,r) -> gen_list l @ gen_list r @ []
   | Lam (x, body) -> x :: gen_list body @ []
 
-let rec length (l: string list) =
-  match l with
-  | [] -> 0
-  | _ :: t -> 1 + length t
-
-
-
-
 
 let rec check_var opfst (lst: string list) : bool =
   match lst with
   | [] -> false
   | h :: t -> h = opfst || check_var opfst t
+
+(**
+[gen_new_name opfst lst] 
+*)
 
 let rec gen_new_name (opfst: string) (lst: string list) : string =
   if check_var opfst lst then
@@ -214,14 +130,61 @@ let rec gen_new_name (opfst: string) (lst: string list) : string =
   else
     opfst
 
-(*  Make it so that after the new variable is created it then replaces it in the old expr
-    you can do this by:
-    Pattern mathcing and seeing where in the expr the old variable was
-    Then use PAT MATCH to replace it with a new variable
+(**
+[is_fresh e name] checks if the expression given already has the string in the lambda expression 
+  uses patter mathhing to rec check if the name is in the lambda expr
+*)
+
+let rec is_fresh (e : expr) (name : string) : bool =
+  match e with
+  | Var x ->
+    if x = name then false else true
+  | App(l, r) ->
+    is_fresh l name && is_fresh r name
+  | Lam (x, e') ->
+    if x = name then false else is_fresh e' name
+
+(**
+[rename e oldn] is the expression [e'] resulting from replacing {b}every{b}
+free occurrence of the name [oldn] with the argument name.
+
+@Error the function exists with error if the new name is not fresh.
+*)
+
+let rec rename (e: expr) (oldn: string) : expr =
+  let u = "u" in
+  if is_fresh e u then
+    match e with
+    | (Var x) as v -> if x = oldn then Var "u" else v
+    | App (l, r) -> App (rename l oldn, rename r oldn)
+    | Lam (x, body) ->
+      Lam ((if x = oldn then u else x) , rename body oldn)
+  else 
+    let u' = gen_new_name u (gen_list (e)) in
+    if is_fresh e u' then
+      match e with
+      | (Var x) as v -> if x = oldn then Var u' else v
+      | App (l, r) -> App (rename l oldn, rename r oldn)
+      | Lam (x, body) -> Lam ((if x = oldn then u' else x), rename body oldn)
+    else 
+      e
+
+(* Not wokring fix, infinite recursion bug happenign*)
+let rec is_alpha (e1: expr) (e2: expr) : bool =
+  match (e1,e2) with
+  | Var x, Var y -> x = y
+  | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
+  | Lam (x, e1) as v1 , Lam (y, e2) ->
+    if x = y then is_alpha e1 e2
+    else is_alpha v1 (Lam (y, rename e2 y))    
+  | _ -> false
 
 
-A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e. *)
-(* Hint:
+
+
+(* 
+A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e. 
+ Hint:
   1. Compute the list of all names that appear in e, let's call it l.
     This will give us a list of names that for sure are not fresh for e.
   2. Compute the length of l, let's call it n.

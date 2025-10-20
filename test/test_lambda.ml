@@ -1,5 +1,5 @@
 open Syntax.Untyped
-open Utils.List
+open Utils.Tools
 
 
 (*
@@ -34,22 +34,28 @@ special case
 print_endline (string_of_bool (is_alpha f1 f3));
 
 
+
+
+let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
+let e3 = Lam ("u1", App (Var "u1", Var "y"))
+
+let() = 
+  print_endline (string_of_expr (rename e3 "u1"));
+  print_endline (string_of_expr (rename f2 "u"))
+
 *)
 
 
-let f1 = App(Lam ("x7", App (Var "x7", Lam ("z", App (Var "x7", Var "y")))), Var "z")
-
+(*
 let() =
-  (* print_endline(print_strlst(gen_list f1)); *)
-  print_endline (list_to_string (fun x -> x) (gen_list f1));
-  print_int (length (gen_list f1));
-  print_newline();
+  print_endline (list_to_string (fun x -> x) (gen_list e3)); 
+  print_endline (list_to_string (fun x -> x) (gen_list f1)); 
   print_endline (string_of_bool (check_var "x1" (gen_list f1)));
   print_endline (gen_new_name "x7" (gen_list f1))
 
+*)
 
-
-(*
+let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
 let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
 let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "z")
 let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "z")
@@ -59,11 +65,15 @@ let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "
 
 let () =
   print_endline (string_of_bool (is_alpha f1 f1));
-  print_endline (string_of_bool (is_alpha f1 f2));      Took out is_aplha, it is commented, make sure to implement it back
-  print_endline (string_of_bool (is_alpha f1 f4));               when you test
+  
+  
+  (*
+  Does not run for some reason terminal freezes, and computer starts to fan out for all the things below
+  print_endline (string_of_bool (is_alpha f1 f2)); 
+  print_endline (string_of_bool (is_alpha f1 f4));              
   print_endline (string_of_bool (is_alpha f1 f5));   (* should be false but is true*)
   print_endline (string_of_bool (is_alpha f1 f6));
-*)
+  *)
 
 
 
