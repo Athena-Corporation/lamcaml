@@ -83,6 +83,12 @@ let rec free_vars exp =
   | App (x1, x2) -> free_vars x1 @ free_vars x2
   | Lam (x, body) -> List.filter (fun y -> y <> x) (free_vars body)
 
+let rec is_free (v: string) (e: expr) : bool  = 
+  match e with 
+  | Var x -> v = x 
+  | App (l, r) -> is_free v l || is_free v r
+  | Lam(x, body) -> if v = x then false else is_free v body
+
 let rec bound_vars exp =
   match exp with
   | Var _ -> []
@@ -153,23 +159,21 @@ free occurrence of the name [oldn] with the argument name.
 
 let rec rename (e: expr) (oldn: string) : expr =
   let u = "u" in
-  if is_fresh e u then
-    match e with
-    | (Var x) as v -> if x = oldn then Var "u" else v
-    | App (l, r) -> App (rename l oldn, rename r oldn)
+  let rec aux_rename (expr: expr) (newn: string) : expr =
+    match expr with
+    | Var x -> if x = oldn then Var newn else Var x
+    | App (l, r) -> App (aux_rename l newn, aux_rename r newn)
     | Lam (x, body) ->
-      Lam ((if x = oldn then u else x) , rename body oldn)
-  else 
-    let u' = gen_new_name u (gen_list (e)) in
-    if is_fresh e u' then
-      match e with
-      | (Var x) as v -> if x = oldn then Var u' else v
-      | App (l, r) -> App (rename l oldn, rename r oldn)
-      | Lam (x, body) -> Lam ((if x = oldn then u' else x), rename body oldn)
-    else 
-      e
+        let x' = if x = oldn then newn else x in
+        Lam (x', aux_rename body newn)
+  in
+  if is_fresh e u then
+    aux_rename e u
+  else
+    let u' = gen_new_name u (gen_list e) in
+    aux_rename e u'
 
-(* Not wokring fix, infinite recursion bug happenign*)
+(* Not wokring fix, infinite recursion bug happenign
 let rec is_alpha (e1: expr) (e2: expr) : bool =
   match (e1,e2) with
   | Var x, Var y -> x = y
@@ -178,8 +182,7 @@ let rec is_alpha (e1: expr) (e2: expr) : bool =
     if x = y then is_alpha e1 e2
     else is_alpha v1 (Lam (y, rename e2 y))    
   | _ -> false
-
-
+*)
 
 
 (* 
@@ -213,6 +216,10 @@ let gen_new_name (e : expr) : string =
 (*
 Ex. 6 - Implement Substitution: Def. 1.6.1.
   Hint Question: what is a good data structure for substitutions?
+In subsutituion we hvae to somehow chnage the vairbales into numbers, so that we can actually get a value 
+(λx. x + 1) where x = 5, we have to be able to type this into ocaml and get a value of 6, the one has to chnage from varibale to number
+
+let rec substitute (e; expr) (v: string) : expr = 
+  match e with 
+
 *)
-
-
