@@ -60,7 +60,8 @@ let rec string_of_expr e =
   | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
 
 
-let rec sub_term e : expr list =
+(** [sub_term e] is the list of subterms of [e]. *)
+let rec sub_term (e : expr) : expr list =
   match e with
   | Var _ -> [e]
   | App (e1, e2) -> e :: (sub_term e1 @ sub_term e2)
@@ -83,9 +84,9 @@ let rec free_vars exp =
   | App (x1, x2) -> free_vars x1 @ free_vars x2
   | Lam (x, body) -> List.filter (fun y -> y <> x) (free_vars body)
 
-let rec is_free (v: string) (e: expr) : bool  = 
-  match e with 
-  | Var x -> v = x 
+let rec is_free (v: string) (e: expr) : bool  =
+  match e with
+  | Var x -> v = x
   | App (l, r) -> is_free v l || is_free v r
   | Lam(x, body) -> if v = x then false else is_free v body
 
@@ -116,13 +117,14 @@ let rec gen_list (e: expr) : string list =
   | Lam (x, body) -> x :: gen_list body @ []
 
 
+(** [check_var name name_list] TODO: Continue *)
 let rec check_var opfst (lst: string list) : bool =
   match lst with
   | [] -> false
   | h :: t -> h = opfst || check_var opfst t
 
 (**
-[gen_new_name opfst lst] 
+[gen_new_name opfst lst]
 *)
 
 let rec gen_new_name (opfst: string) (lst: string list) : string =
@@ -137,10 +139,9 @@ let rec gen_new_name (opfst: string) (lst: string list) : string =
     opfst
 
 (**
-[is_fresh e name] checks if the expression given already has the string in the lambda expression 
+[is_fresh e name] checks if the expression given already has the string in the lambda expression
   uses patter mathhing to rec check if the name is in the lambda expr
 *)
-
 let rec is_fresh (e : expr) (name : string) : bool =
   match e with
   | Var x ->
@@ -155,8 +156,9 @@ let rec is_fresh (e : expr) (name : string) : bool =
 free occurrence of the name [oldn] with the argument name.
 
 @Error the function exists with error if the new name is not fresh.
-*)
 
+{b}fix the text{b}
+*)
 let rec rename (e: expr) (oldn: string) : expr =
   let u = "u" in
   let rec aux_rename (expr: expr) (newn: string) : expr =
@@ -180,13 +182,13 @@ let rec is_alpha (e1: expr) (e2: expr) : bool =
   | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
   | Lam (x, e1) as v1 , Lam (y, e2) ->
     if x = y then is_alpha e1 e2
-    else is_alpha v1 (Lam (y, rename e2 y))    
+    else is_alpha v1 (Lam (y, rename e2 y))
   | _ -> false
 *)
 
 
-(* 
-A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e. 
+(*
+A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e.
  Hint:
   1. Compute the list of all names that appear in e, let's call it l.
     This will give us a list of names that for sure are not fresh for e.
@@ -216,10 +218,10 @@ let gen_new_name (e : expr) : string =
 (*
 Ex. 6 - Implement Substitution: Def. 1.6.1.
   Hint Question: what is a good data structure for substitutions?
-In subsutituion we hvae to somehow chnage the vairbales into numbers, so that we can actually get a value 
+In subsutituion we hvae to somehow chnage the vairbales into numbers, so that we can actually get a value
 (λx. x + 1) where x = 5, we have to be able to type this into ocaml and get a value of 6, the one has to chnage from varibale to number
 
-let rec substitute (e; expr) (v: string) : expr = 
-  match e with 
+let rec substitute (e; expr) (v: string) : expr =
+  match e with
 
 *)

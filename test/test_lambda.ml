@@ -39,27 +39,23 @@ print_endline (string_of_bool (is_alpha f1 f3));
 let f3 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
 let f2 = Lam ("x", (Lam("y", Var "x")))
 let e3 = Lam ("x", App (Var "x", Var "y"))
- 
+let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
 
+(*
+e3 = (λ x. x y)[x := z] = e3
+e3' = x (λ x . x y) [x := z] = z (λ x. x y)
+*)
 
-
+(* Renaming test *)
+let() =
+  print_string (string_of_expr (rename e3' "x"))
 
 
 
 (*
-
-Renaming test
-let() = 
-  print_endline (string_of_bool(is_free "y" e3));
-  print_endline (string_of_expr f2);
-  print_endline (string_of_expr (rename f2 "x"))
-
-
-
-
 let() =
-  print_endline (list_to_string (fun x -> x) (gen_list e3)); 
-  print_endline (list_to_string (fun x -> x) (gen_list f1)); 
+  print_endline (list_to_string (fun x -> x) (gen_list e3));
+  print_endline (list_to_string (fun x -> x) (gen_list f1));
   print_endline (string_of_bool (check_var "x1" (gen_list f1)));
   print_endline (gen_new_name "x7" (gen_list f1))
 
@@ -73,12 +69,12 @@ let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "
 let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v")
 
 
-  
-  
+
+
   (*
   Does not run for some reason terminal freezes, and computer starts to fan out for all the things below
-  print_endline (string_of_bool (is_alpha f1 f2)); 
-  print_endline (string_of_bool (is_alpha f1 f4));              
+  print_endline (string_of_bool (is_alpha f1 f2));
+  print_endline (string_of_bool (is_alpha f1 f4));
   print_endline (string_of_bool (is_alpha f1 f5));   (* should be false but is true*)
   print_endline (string_of_bool (is_alpha f1 f6));
   *)
