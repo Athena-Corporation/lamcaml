@@ -44,11 +44,17 @@ let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
 (*
 e3 = (λ x. x y)[x := z] = e3
 e3' = x (λ x . x y) [x := z] = z (λ x. x y)
+
+
 *)
 
 (* Renaming test *)
 let() =
-  print_string (string_of_expr (rename e3' "x"))
+  print_endline (string_of_expr (rename f2 "y"));  (*Error with giving back the og expression*)
+  print_endline (string_of_expr (rename f2 "x"));
+  print_endline (string_of_expr (rename e3 "x"));
+  print_endline(string_of_expr e3' );
+  print_endline (string_of_expr (rename e3' "x"))  (*Error with giving back the og expression*)
 
 
 
