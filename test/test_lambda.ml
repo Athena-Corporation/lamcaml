@@ -35,25 +35,41 @@ print_endline (string_of_bool (is_alpha f1 f3));
 
 *)
 
-
-let f3 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
+(*
+  λ x . (x (λ x . x))" an alpha-variant"
+  λ z. ([x][x := z])
+*)
+let f3 = App (Var "x", Lam ("x", Var "x"))
 let f2 = Lam ("x", (Lam("y", Var "x")))
 let e3 = Lam ("x", App (Var "x", Var "y"))
 let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
 
-(*
-e3 = (λ x. x y)[x := z] = e3
-e3' = x (λ x . x y) [x := z] = z (λ x. x y)
+let sub_test = App (Var "x", Var "y")
 
+
+(*
+
+Let σ be a the substitution σ := [y := N] in
+
+(P Q) σ = (P σ) (Q σ)
+
+what we would really like:
+(λ x. M)σ = λ x . (M σ)
+
+Renaming:
+(λ x . M)σ = λ z. (M{x -> z}σ), z doesn't appear free in N
 
 *)
 
 (* Renaming test *)
 let() =
-  print_endline (string_of_expr (rename f2 "x"));
+  print_endline ("Substitute x by " ^ (string_of_expr f3) ^ " in " ^ (string_of_expr sub_test) ^ " using " ^ (string_of_subst ("x", f3)));
+  print_endline (string_of_expr (app_sub ("x", f3) sub_test))
+
+  (* print_endline (string_of_expr (rename f2 "x"));
   print_endline (string_of_expr (rename e3 "x"));
   print_endline(string_of_expr e3' );
-  print_endline (string_of_expr (rename e3' "x")) (* Error with giving back the og expression *)
+  print_endline (string_of_expr (rename e3' "x")) Error with giving back the og expression *)
 
 
 
@@ -66,17 +82,17 @@ let() =
 
 *)
 
-let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
+(* let f1 = App (Lam ("x", App (Var "x", Lam ("z", App (Var "x", Var "y")))), Var "z")
 let f2 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "z")
 let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "z")
 let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "z")
 let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "z")
-let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v")
+let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v") *)
 
 
-let () =
+(* let () =
     print_endline (list_to_string (fun x -> x) (gen_list f1))
-
+ *)
 
 
   (*

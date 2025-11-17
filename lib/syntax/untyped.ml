@@ -4,7 +4,7 @@ type expr =
   | App of expr * expr
   | Lam of string * expr
 
-(** Given 2 [expr] the [equal_expr] will state if the expression are equal or not. 
+(** Given 2 [expr] the [equal_expr] will state if the expression are equal or not.
   Recursively checks if the varibales are equal to each or not using Library [String] and [equal]
 *)
 let rec equal_expr e1 e2 : bool =
@@ -15,7 +15,7 @@ let rec equal_expr e1 e2 : bool =
   | Lam (x1, b1), Lam (x2, b2) -> equal x1 x2 && equal_expr b1 b2
   | _ -> false
 
-(** [string_of_expr] gives out any [expr] as a [string] for pretty printing in terminal. 
+(** [string_of_expr] gives out any [expr] as a [string] for pretty printing in terminal.
  Adds Lambda symbols and parenthesis for client to see
  *)
 let rec string_of_expr e =
@@ -26,8 +26,8 @@ let rec string_of_expr e =
 
 (** [sub_term] will break an [expr] down into its Subterms and put in in a list to be printed out.
 [Subterms] in Lambda Calculus are the pieces of a lambda expression
-{b}Error: the subterms are not actually right it cannot give out the binding var as a subterm{b} 
-- Ex. [λx.(xx) --> [(xx), (x), (x)]] 
+{b}Error: the subterms are not actually right it cannot give out the binding var as a subterm{b}
+- Ex. [λx.(xx) --> [(xx), (x), (x)]]
 *)
 let rec sub_term e : expr list =
   match e with
@@ -44,15 +44,15 @@ let rec is_subterm x y : bool =
   | Lam (_, body) -> is_subterm x body
 
 (** [is_poprsubterm] checks if 2 [expr] are are proper subterms or not.
-A [Proper Subterm] is when a Subterm does not equal the orginal expression  
+A [Proper Subterm] is when a Subterm does not equal the orginal expression
 *)
 let is_propsubterm e1 e2 =
   is_subterm e2 e1 && not (equal_expr e1 e2)
 
 (** [free_vars] checks whether a variable inside an [expr] is free; adds all Free varibales to a list
 [Free Variables] in Lambda Calculus is when a varibale is not bound by a binding variable.
-- Ex. [λx.(xy) --> (y)] 
-*)  
+- Ex. [λx.(xy) --> (y)]
+*)
 let rec free_vars exp =
   match exp with
   | Var x -> [x]
@@ -61,7 +61,7 @@ let rec free_vars exp =
 
 (** [is_free] states whether a varible is Free or not in an [expr]
 [Free Variables] in Lambda Calculus is when a variable is not bound by a binding variable.
-- Ex. [λx.(xy) --> (y)] 
+- Ex. [λx.(xy) --> (y)]
 *)
 let rec is_free (v: string) (e: expr) : bool  =
   match e with
@@ -71,16 +71,16 @@ let rec is_free (v: string) (e: expr) : bool  =
 
 (** [bound_vars] checks whether a variable inside an [expr] is Bound; adds all Bound varibales to a list
 [Bound Variables] in Lambda Calculus is when a variable is bound by a binding variable.
-- Ex. [λx.(xy) --> (x)] 
-*)  
+- Ex. [λx.(xy) --> (x)]
+*)
 let rec bound_vars exp =
   match exp with
   | Var _ -> []
   | App (x1, x2) -> bound_vars x1 @ bound_vars x2
   | Lam (x, body) -> x :: bound_vars body
 
-(** [combinator] states whether an expression is a closed λ term. 
-[Closed λ-Term/Combinator] is when a λ does not have any Free variables  
+(** [combinator] states whether an expression is a closed λ term.
+[Closed λ-Term/Combinator] is when a λ does not have any Free variables
 *)
 let combinator exp =
   match free_vars exp with
@@ -96,8 +96,8 @@ let rec gen_list (e: expr) : string list =
   | App (l ,r) -> gen_list l @ gen_list r @ []
   | Lam (x, body) -> x :: gen_list body @ []
 
-(** [check_var] checks and states if a variable is inside a list. Used to check if a variable is present in the variables 
-found in a give [expr] 
+(** [check_var] checks and states if a variable is inside a list. Used to check if a variable is present in the variables
+found in a give [expr]
 *)
 let rec check_var var (lst: string list) : bool =
   match lst with
@@ -131,7 +131,7 @@ let rec is_fresh (e : expr) (name : string) : bool =
 
 (**
 [rename] is the [expr] [e'] resulting from replacing {b}every{b}
-free occurrence of the name [oldn] with the argument name. 
+free occurrence of the name [oldn] with the argument name.
 *)
 let rename (e: expr) (oldn: string) : expr =
   let rec aux_rename (expr: expr) (newn: string) : expr =
@@ -145,7 +145,7 @@ let rename (e: expr) (oldn: string) : expr =
     | App (l, r) -> App (aux_rename l newn, aux_rename r newn)
     | Lam (x, body) -> (
       if x = oldn then
-        expr     
+        expr
       else
         Lam (x, aux_rename body newn)
     ) in
@@ -160,6 +160,21 @@ let rename (e: expr) (oldn: string) : expr =
       failwith "Fatal Error: Implementation of the function gen_new_name in module untyped.ml is not correct."
 
 
+let rename' (e : expr) (x : string) (z : string) : expr =
+  failwith "Not implemented Yet."
+
+
+(* Renaming: *)
+(*
+It needs
+alpha_variant :
+*)
+
+(*
+  λ x . (x (λ x . x))" an alpha-variant"
+  λ z. ([x][x := z])
+*)
+
 (*
 Ex. 6 - Implement Substitution: Def. 1.6.1.
   Hint Question: what is a good data structure for substitutions?
@@ -170,3 +185,34 @@ let rec substitute (e; expr) (v: string) : expr =
   match e with
 
 *)
+
+(*
+Def. Subst. σ : X -> T
+
+[x := e]
+
+
+fst : A * B -> A
+snd : A * B -> B
+
+*)
+
+type subst = string * expr
+
+(* subst s *)
+
+let string_of_subst (s : subst) : string =
+  match s with
+  | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
+
+let fun_of_subst (s : subst) : string -> expr =
+  failwith "TODO: Not implemented Yet."
+
+let rec app_sub (s : subst) (t : expr) : expr =
+  let open Pair in
+  match t with
+  | Var x as v -> if x = (fst s) then snd s else v
+  | App(l,r) -> App (app_sub s l, app_sub s r)
+  | Lam(x,body) ->
+    let z = gen_new_name x (List.append (gen_list t) (gen_list (snd s))) in
+    failwith "not implemented yet"
