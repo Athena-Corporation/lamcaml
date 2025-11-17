@@ -50,7 +50,6 @@ e3' = x (λ x . x y) [x := z] = z (λ x. x y)
 
 (* Renaming test *)
 let() =
-  print_endline (string_of_expr (rename e3' "x"));  (*Error with giving back the og expression*)
   print_endline (string_of_expr (rename f2 "x"));
   print_endline (string_of_expr (rename e3 "x"));
   print_endline(string_of_expr e3' );
@@ -74,6 +73,9 @@ let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "
 let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "z")
 let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v")
 
+
+let () =
+    print_endline (list_to_string (fun x -> x) (gen_list f1))
 
 
 
@@ -118,7 +120,6 @@ let () =
   string_of_expr e1  |> print_endline ;
   string_of_expr id2 |> print_endline
 string_of_bool (equal_expr id1 id2) |> print_endline *)
-
 
 
 (* let () =

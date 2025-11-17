@@ -1,50 +1,12 @@
-
-(* Example, the identity on lambda calculus:
-  -
-  M  = λ x. (x (λ y . y)) => "the semantics": take the first argument 'x' and apply the identity to x.
-  M' = λ z. (z (λ y. y))  => "the semantics" : the same as M.
-
-   "The name of bound variables should not affect its semantics."
-   Intuition:
-   f(x) = x + 2 => "the semantics": "take an input, add 2 to this input"
-   f(z) = z + 2 => the same...
-   f(w) = ... and so on...
-
-   f(x) = x + 2 + y => "the semantics" :
-    "take the input and add it to 2 and an unknown constant y"
-   f'(x) = x + 2 + z => "take the input add it to 2 and z"
-
-*)
-
-(* Exercises for this type: *)
-(*
-1. Pretty printing.
-2. Notions of equality.
-    - Syntactic equality ≡
-    - Alpha equality =α
-*)
-
-(*
-  1. Our datatype for expressions/terms
-*)
-
-(* Expressions.
-
-To define terms, we need:
-  - a type for variables
-With that, an expression is:
-  - a variable
-  - if s and t are expressions, (s t) is an expression
-  - if s is an expression and x is a variable, then λ x. s is an expression
-
-Implement this.
-*)
-
+(** Lambda functions*)
 type expr =
   | Var of string
   | App of expr * expr
   | Lam of string * expr
 
+(** Given 2 [expr] the [equal_expr] will state if the expression are equal or not. 
+  Recursively checks if the varibales are equal to each or not using Library [String] and [equal]
+*)
 let rec equal_expr e1 e2 : bool =
   let open String in (* locally open strings *)
   match e1, e2 with
@@ -53,19 +15,27 @@ let rec equal_expr e1 e2 : bool =
   | Lam (x1, b1), Lam (x2, b2) -> equal x1 x2 && equal_expr b1 b2
   | _ -> false
 
+(** [string_of_expr] gives out any [expr] as a [string] for pretty printing in terminal. 
+ Adds Lambda symbols and parenthesis for client to see
+ *)
 let rec string_of_expr e =
   match e with
   | Var x -> x
   | App (e1, e2) -> "(" ^ string_of_expr e1 ^ "•" ^ string_of_expr e2 ^ ")"
   | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
 
-
+(** [sub_term] will break an [expr] down into its Subterms and put in in a list to be printed out.
+[Subterms] in Lambda Calculus are the pieces of a lambda expression
+{b}Error: the subterms are not actually right it cannot give out the binding var as a subterm{b} 
+- Ex. [λx.(xx) --> [(xx), (x), (x)]] 
+*)
 let rec sub_term e : expr list =
   match e with
   | Var _ -> [e]
   | App (e1, e2) -> e :: (sub_term e1 @ sub_term e2)
   | Lam (_, body) -> e :: sub_term body
 
+(** [is_subterm] states whether 2 [expr] are Subterms. *)
 let rec is_subterm x y : bool =
   equal_expr x y ||
   match y with
@@ -73,58 +43,71 @@ let rec is_subterm x y : bool =
   | App (l, r) -> is_subterm x l || is_subterm x r
   | Lam (_, body) -> is_subterm x body
 
-
-let is_proper_subterm e1 e2 =
+(** [is_poprsubterm] checks if 2 [expr] are are proper subterms or not.
+A [Proper Subterm] is when a Subterm does not equal the orginal expression  
+*)
+let is_propsubterm e1 e2 =
   is_subterm e2 e1 && not (equal_expr e1 e2)
 
+(** [free_vars] checks whether a variable inside an [expr] is free; adds all Free varibales to a list
+[Free Variables] in Lambda Calculus is when a varibale is not bound by a binding variable.
+- Ex. [λx.(xy) --> (y)] 
+*)  
 let rec free_vars exp =
   match exp with
   | Var x -> [x]
   | App (x1, x2) -> free_vars x1 @ free_vars x2
   | Lam (x, body) -> List.filter (fun y -> y <> x) (free_vars body)
 
+(** [is_free] states whether a varible is Free or not in an [expr]
+[Free Variables] in Lambda Calculus is when a variable is not bound by a binding variable.
+- Ex. [λx.(xy) --> (y)] 
+*)
 let rec is_free (v: string) (e: expr) : bool  =
   match e with
   | Var x -> v = x
   | App (l, r) -> is_free v l || is_free v r
   | Lam(x, body) -> if v = x then false else is_free v body
 
+(** [bound_vars] checks whether a variable inside an [expr] is Bound; adds all Bound varibales to a list
+[Bound Variables] in Lambda Calculus is when a variable is bound by a binding variable.
+- Ex. [λx.(xy) --> (x)] 
+*)  
 let rec bound_vars exp =
   match exp with
   | Var _ -> []
   | App (x1, x2) -> bound_vars x1 @ bound_vars x2
   | Lam (x, body) -> x :: bound_vars body
 
+(** [combinator] states whether an expression is a closed λ term. 
+[Closed λ-Term/Combinator] is when a λ does not have any Free variables  
+*)
 let combinator exp =
   match free_vars exp with
   | [] -> true
   | _ -> false
 
+(* ----------------------------------------Renaming & helping Functions----------------------------- *)
 
-
-(* Variables and renaming *)
-
-(** This function checks whether the new name nwn is valid
-(fresh = doesn't occur anywhere in in the expression).This function satisfy the following:
-  - it only returns true if the "name" argument is completely new.
-*)
-
+(** [gen_list] generates a list of all the variables that are present in a given [expr].*)
 let rec gen_list (e: expr) : string list =
   match e with
   | Var x -> x :: []
   | App (l ,r) -> gen_list l @ gen_list r @ []
   | Lam (x, body) -> x :: gen_list body @ []
 
-
-let rec check_var opfst (lst: string list) : bool =
+(** [check_var] checks and states if a variable is inside a list. Used to check if a variable is present in the variables 
+found in a give [expr] 
+*)
+let rec check_var var (lst: string list) : bool =
   match lst with
   | [] -> false
-  | h :: t -> h = opfst || check_var opfst t
+  | h :: t -> h = var || check_var var t
 
 (**
-[gen_new_name opfst lst]
+[gen_new_name] will generate a new variable to add into an [expr]; occurs when a variable is not
+[Fresh] in an [expr].
 *)
-
 let rec gen_new_name (opfst: string) (lst: string list) : string =
   if check_var opfst lst then
     let rec unique n =
@@ -136,11 +119,7 @@ let rec gen_new_name (opfst: string) (lst: string list) : string =
   else
     opfst
 
-(**
-[is_fresh e name] checks if the expression given already has the string in the lambda expression
-  uses patter mathhing to rec check if the name is in the lambda expr
-*)
-
+(** [is_fresh] checks if the the [name: string] is already present in a given [expr] *)
 let rec is_fresh (e : expr) (name : string) : bool =
   match e with
   | Var x ->
@@ -151,11 +130,8 @@ let rec is_fresh (e : expr) (name : string) : bool =
     if x = name then false else is_fresh e' name
 
 (**
-[rename e oldn] is the expression [e'] resulting from replacing {b}every{b}
-free occurrence of the name [oldn] with the argument name.
-
-@Error Have to change the thing, bc lambda cannot be renamed, if the lambda is equal
- to the nwn then renaming cannot happen; also the oldn shoulnd need to be compared to x, aux_rname shoudl only be considred about renaming
+[rename] is the [expr] [e'] resulting from replacing {b}every{b}
+free occurrence of the name [oldn] with the argument name. 
 *)
 let rename (e: expr) (oldn: string) : expr =
   let rec aux_rename (expr: expr) (newn: string) : expr =
@@ -169,11 +145,7 @@ let rename (e: expr) (oldn: string) : expr =
     | App (l, r) -> App (aux_rename l newn, aux_rename r newn)
     | Lam (x, body) -> (
       if x = oldn then
-        expr     (*Change so that it is an exception message leaving it as x gives errors when doing nested lambda functions*)
-        (*
-        Deivid: your mistake was minor, you were returning the argument e (given originally by the rename),
-        while you had to actually return the argument named [expr] given by the internal auxiliary function [aux_rename].
-        *)
+        expr     
       else
         Lam (x, aux_rename body newn)
     ) in
@@ -182,53 +154,10 @@ let rename (e: expr) (oldn: string) : expr =
     aux_rename e u
   else
     let u' = gen_new_name u (gen_list e) in
-    (* Added: a final check to guarantee that the name generated by the function [gen_new_name] is actually fresh. *)
     if is_fresh e u' then
       aux_rename e u'
     else
       failwith "Fatal Error: Implementation of the function gen_new_name in module untyped.ml is not correct."
-
-
-
-
-(* Not wokring fix, infinite recursion bug happenign
-let rec is_alpha (e1: expr) (e2: expr) : bool =
-  match (e1,e2) with
-  | Var x, Var y -> x = y
-  | App (x1, x2), App (y1,y2) -> is_alpha x1 y1 && is_alpha x2 y2
-  | Lam (x, e1) as v1 , Lam (y, e2) ->
-    if x = y then is_alpha e1 e2
-    else is_alpha v1 (Lam (y, rename e2 y))
-  | _ -> false
-*)
-
-
-(*
-A function [gen_new_name e] of an expression e, should return a string such that it is a fresh name for e.
- Hint:
-  1. Compute the list of all names that appear in e, let's call it l.
-    This will give us a list of names that for sure are not fresh for e.
-  2. Compute the length of l, let's call it n.
-    Why? Because this will give us the number of names that exists.
-  3. Let the CANDIDATE for new name be : "x" ^ (string_of_int n) (which is exactly xn), let's call this x_n.
-  4. Test if x_n is in l.
-      - if x_n is in l then
-          let's try a new name with now, "x" ^ (string_of_int (n + 1))
-          and go back to 4 to test the new name
-      - else
-          return x_(n + ...)
-Main idea:
-  - since we increase the index by one each time we fail and there are finitely many variables in l,
-    what will happen is that at some point we will create a name, let's say, x_m for some m
-    that doesn't occur in l.
-
-You can test that for any expression e, is_fresh e (gen_new_name e) will be true.
-
-let gen_new_name (e : expr) : string =
-  (* let l = <compute the list of all names that appear in e> in *)
-  failwith "not implemented"
-
-*)
 
 
 (*
