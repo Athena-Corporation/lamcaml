@@ -42,39 +42,52 @@ print_endline (string_of_bool (is_alpha f1 f3));
 let f3 = App (Var "x", Lam ("x", Var "x"))
 let f2 = App( Var "x", Var "y")
 let e3 = Lam ("x", App (Var "x", Var "y"))
-let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
-
-
 
 
 (*
+"human-like" syntax:
+  - variables, x, y z
+  - applications: s t
+  - lambdas: fun x -> body
 
-Let σ be a the substitution σ := [y := N] in
+  Internally:
+  (fun x -> x) x =>* App ((Lam "x", Var "x"), Var "x") ->* Var x =>* x
 
-(P Q) σ = (P σ) (Q σ)
+  (fun x -> x) x =>* x
 
-what we would really like:
-(λ x. M)σ = λ x . (M σ)
-
-Renaming:
-(λ x . M)σ = λ z. (M{x -> z}σ), z doesn't appear free in N
 
 *)
 
-(* Renaming test
-let() =
-  print_endline ("Substitute x by " ^ (string_of_expr f3) ^ " in " ^ (string_of_expr sub_test) ^ " using " ^ (string_of_subst ("x", f3)));
- *)
+(*
+    1. Theory version:             (λ x. (x y)) [x := T] = (λ z. (z y)) [x := T] = λ z. z y
+    2. Our Implementation version: (λ x. (x y)) [x := T] = <notice that the binding variable in λ x is exactly the same as the domain of the substitution (fst σ), then we return the same term.
+      (λ x. (x y)) [x := T] = λ x. x y
+
+      σ : X -> Λ
+      (x, t)
+
+      let f = (fun_of_subst (x, t)) in
+        f t
+
+
+
+    *)
+let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
+
+  (* λ x. x T *)
+  (* λ x1 . x1 T *)
+
+
 
 let() =
-  print_endline (string_of_expr(app_sub ("x", f3) f3));
-  
-  
+  print_endline (string_of_expr(app_sub ("y", (Var "T")) e3));
+
+
 (*print_endline(string_of_subst ("y ", f3))
   print_endline (string_of_expr e3');
   print_endline (string_of_expr (rename e3' "x"));
   print_endline (string_of_expr (rename' e3' "x" "t")) *)
-  
+
 
 
 
@@ -161,3 +174,24 @@ let () =
   print_endline (string_of_bool (is_subterm e6 e1));
   print_endline (string_of_bool (is_proper_subterm e1 e2));
   print_endline (string_of_bool (is_proper_subterm e1 e5)) *)
+
+
+(*
+
+  What happens if we apply substitution without any care.
+  (λx. x y) [x := w] = λ x. (x σ) (y σ)
+                     = λ x. w y <changes teh semantics!>
+
+  How do we fix this problem?
+
+  1. "We always rename the bounding name."
+  (λx. x y) [x := w], let's first do a renaming of the bounding name (which is "x" in this case)
+  (λ z. z y) [x := w] = λ z. (z σ) (y σ)
+                      = λ z. z y (equality here for the result of applying a substitution is modulo α)
+
+  2. "A little bit efficient..."
+
+  Consider this case: (λ y. P) [ x := N].
+  Now if y = x, then we know that x doesn't occur free in P.
+    Then the substitution shouldn't do anything.
+*)

@@ -202,7 +202,7 @@ let rename' (e: expr) (oldn: string) (nwn: string): expr =
 
 (*
 Ex. 6 - Implement Substitution: Def. 1.6.1.
-  Hint Question: what is a good data structure for substitutions?  
+  Hint Question: what is a good data structure for substitutions?
 
 *)
 
@@ -218,7 +218,7 @@ snd : A * B -> B
 *)
 
 type subst = string * expr
-(* 
+(*
 String = The old variable the is being replaces --> "x"
 Expr = Is the new expression that will be implemented after the subst --> Var "y"
 *)
@@ -228,14 +228,17 @@ let string_of_subst (s : subst) : string =
   match s with
   | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
 
-(* let fun_of_subst (s : subst) : string -> expr =
-  failwith "TODO: Not implemented Yet." *)
+let fun_of_subst (s : subst) : string -> expr =
+  failwith "TODO: Not implemented Yet."
 
 let rec app_sub (s : subst) (t : expr) : expr =
   match t with
   | Var x as v -> if x = (fst s) then snd s else v
   | App(l,r) -> App (app_sub s l, app_sub s r)
   | Lam(x,body) ->
-    let z = gen_new_name x (List.append (gen_list t) (gen_list (snd s))) in
-    if x = (fst s) then Lam(z, (app_sub s (rename' t x z)))
-    else Lam(x, body)
+      if x = (fst s) then t
+    else
+      let z = gen_new_name x ([fst s] @ (List.rev_append (gen_list t) (gen_list (snd s)))) in
+      let new_body = rename' body x z in
+      assert (is_fresh body z) ;
+      Lam (z, app_sub s new_body)
