@@ -160,15 +160,40 @@ let rename (e: expr) (oldn: string) : expr =
       failwith "Fatal Error: Implementation of the function gen_new_name in module untyped.ml is not correct."
 
 
-let rename' (e : expr) (x : string) (z : string) : expr =
-  failwith "Not implemented Yet."
-
-
 (* Renaming: *)
 (*
 It needs
 alpha_variant :
 *)
+
+let rename' (e: expr) (oldn: string) (nwn: string): expr =
+  let rec aux_rename (expr: expr) (newn: string) : expr =
+    match expr with
+    | Var x as v -> (
+      if x = oldn then
+        Var newn
+      else
+        v
+    )
+    | App (l, r) -> App (aux_rename l newn, aux_rename r newn)
+    | Lam (x, body) -> (
+      if x = oldn then
+        expr
+      else
+        Lam (x, aux_rename body newn)
+    ) in
+  if is_fresh e nwn then
+    aux_rename e nwn
+  else
+    let u' = gen_new_name nwn (gen_list e) in
+    if is_fresh e u' then
+      aux_rename e u'
+    else
+      failwith "Fatal Error: Implementation of the function gen_new_name in module untyped.ml is not correct."
+
+
+
+
 
 (*
   λ x . (x (λ x . x))" an alpha-variant"
@@ -177,12 +202,7 @@ alpha_variant :
 
 (*
 Ex. 6 - Implement Substitution: Def. 1.6.1.
-  Hint Question: what is a good data structure for substitutions?
-In subsutituion we hvae to somehow chnage the vairbales into numbers, so that we can actually get a value
-(λx. x + 1) where x = 5, we have to be able to type this into ocaml and get a value of 6, the one has to chnage from varibale to number
-
-let rec substitute (e; expr) (v: string) : expr =
-  match e with
+  Hint Question: what is a good data structure for substitutions?  
 
 *)
 
@@ -198,21 +218,24 @@ snd : A * B -> B
 *)
 
 type subst = string * expr
+(* 
+String = The old variable the is being replaces --> "x"
+Expr = Is the new expression that will be implemented after the subst --> Var "y"
+*)
 
-(* subst s *)
 
 let string_of_subst (s : subst) : string =
   match s with
   | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
 
-let fun_of_subst (s : subst) : string -> expr =
-  failwith "TODO: Not implemented Yet."
+(* let fun_of_subst (s : subst) : string -> expr =
+  failwith "TODO: Not implemented Yet." *)
 
 let rec app_sub (s : subst) (t : expr) : expr =
-  let open Pair in
   match t with
   | Var x as v -> if x = (fst s) then snd s else v
   | App(l,r) -> App (app_sub s l, app_sub s r)
   | Lam(x,body) ->
     let z = gen_new_name x (List.append (gen_list t) (gen_list (snd s))) in
-    failwith "not implemented yet"
+    if x = (fst s) then Lam(z, (app_sub s (rename' t x z)))
+    else Lam(x, body)

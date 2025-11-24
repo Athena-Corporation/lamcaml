@@ -40,11 +40,11 @@ print_endline (string_of_bool (is_alpha f1 f3));
   λ z. ([x][x := z])
 *)
 let f3 = App (Var "x", Lam ("x", Var "x"))
-let f2 = Lam ("x", (Lam("y", Var "x")))
+let f2 = App( Var "x", Var "y")
 let e3 = Lam ("x", App (Var "x", Var "y"))
 let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
 
-let sub_test = App (Var "x", Var "y")
+
 
 
 (*
@@ -61,15 +61,22 @@ Renaming:
 
 *)
 
-(* Renaming test *)
+(* Renaming test
 let() =
   print_endline ("Substitute x by " ^ (string_of_expr f3) ^ " in " ^ (string_of_expr sub_test) ^ " using " ^ (string_of_subst ("x", f3)));
-  print_endline (string_of_expr (app_sub ("x", f3) sub_test))
+ *)
 
-  (* print_endline (string_of_expr (rename f2 "x"));
-  print_endline (string_of_expr (rename e3 "x"));
-  print_endline(string_of_expr e3' );
-  print_endline (string_of_expr (rename e3' "x")) Error with giving back the og expression *)
+let() =
+  print_endline (string_of_expr(app_sub ("x", f3) f3));
+  
+  
+(*print_endline(string_of_subst ("y ", f3))
+  print_endline (string_of_expr e3');
+  print_endline (string_of_expr (rename e3' "x"));
+  print_endline (string_of_expr (rename' e3' "x" "t")) *)
+  
+
+
 
 
 
