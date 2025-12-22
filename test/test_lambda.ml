@@ -78,9 +78,33 @@ let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
   (* λ x1 . x1 T *)
 
 
+(* (λ x. x) y ->β (x [x := y]) = y *)
+let b_redex = App (Lam ("x", Var "x"), Var "y")
+
+
+(* Tests with the Ω term *)
+
+(* Ω = (λ x. x x) (λ x. x x)
+
+  let δ = (λ x . x x).
+
+Ω = (λ x. x x) δ ->β (x x) [x := δ] = δ δ = (λ x. x x) (λ x. x x) = Ω
+
+So this means that Ω ->β Ω in one single step...
+
+Then what will happens is... Ω ->β Ω ->β Ω ->β ∙ ∙ ∙
+
+
+normal form: is an expression that doesn't not reduce forever.
+
+*)
+
+let rec omega x = omega (omega x)
+
+
 
 let() =
-  print_endline (string_of_expr(app_sub ("y", (Var "T")) e3));
+  print_endline (beta b_redex |> string_of_expr);
 
 
 (*print_endline(string_of_subst ("y ", f3))

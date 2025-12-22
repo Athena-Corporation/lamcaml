@@ -242,3 +242,59 @@ let rec app_sub (s : subst) (t : expr) : expr =
       let new_body = rename' body x z in
       assert (is_fresh body z) ;
       Lam (z, app_sub s new_body)
+
+
+
+(* Beta reduction (Unrestrected)
+
+Computation means this:
+(λ x. s) t ->β s [x := t]
+
+Closure/Compatibility...
+if s ->β s' then s t ->β s' t (Comp. Left)
+
+if t ->β t' then s t ->β s t' (Comp. Right)
+
+if s ->β s' then λ x. s ->β λ x. s' (Comp. Under a Lambda)
+
+*)
+
+(* Interpreter... *)
+let rec beta (t : expr) : expr =
+  match t with
+  | Var _ -> t
+  | Lam (x, body) -> Lam (x, (beta body))
+  | App(Lam(x, body), arg) ->
+    let beta_subst = (x, arg) in (* [x := arg] *)
+    app_sub beta_subst (beta body)
+  | App (lhs, rhs) -> App (beta lhs, beta rhs)
+
+
+(*
+Primitive types:
+Booleans: true/false
+Integers: ... -1, 0, 1, ...
+Functions: λ x. p
+Pairs:     (s, t)
+
+Final Product
+
+Values   v, v' ::== x | true | false | λ x. p | Number
+Expressions p,q,r ::== v | p q | if p then q else r | NativeOp | f | (s,t)
+Functions f, g, h :: function f [x₁,..., xₙ] = { p }
+where NativeOp can be:
+It is usually useful to have some operators to each primitive type, e.g.,
+    - and, or, xor, for booleans
+    - addition, subtraction, for integers
+    - recursion for functions (optional for now)
+
+An Example of a program that should be able to define:
+
+function is_even x = {
+  if div_rest (x, 2) = 0
+    then true
+  else
+    false
+  }
+
+*)
