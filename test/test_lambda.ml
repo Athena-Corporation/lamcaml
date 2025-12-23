@@ -43,6 +43,9 @@ let f3 = App (Var "x", Lam ("x", Var "x"))
 let f2 = App( Var "x", Var "y")
 let e3 = Lam ("x", App (Var "x", Var "y"))
 
+let() = print_endline(string_of_bool( equal_expr f2 f3))
+
+
 
 (*
 "human-like" syntax:
@@ -79,11 +82,15 @@ let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
 
 
 
+
+
+
+(*
+
 let() =
   print_endline (string_of_expr(app_sub ("y", (Var "T")) e3));
 
-
-(*print_endline(string_of_subst ("y ", f3))
+print_endline(string_of_subst ("y ", f3))
   print_endline (string_of_expr e3');
   print_endline (string_of_expr (rename e3' "x"));
   print_endline (string_of_expr (rename' e3' "x" "t")) *)

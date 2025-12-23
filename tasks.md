@@ -1,4 +1,4 @@
-Tasks for meeting on 11/10
+Tasks for meeting on 12/1
 
-- Fix the renaming function,the errors are ont eh comments 
-- Add clean comments to all the code
+- Readt Beta Reduction
+- Analyze Subst functions to see how it works

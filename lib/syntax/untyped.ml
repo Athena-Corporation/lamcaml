@@ -228,8 +228,7 @@ let string_of_subst (s : subst) : string =
   match s with
   | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
 
-let fun_of_subst (s : subst) : string -> expr =
-  failwith "TODO: Not implemented Yet."
+
 
 let rec app_sub (s : subst) (t : expr) : expr =
   match t with
