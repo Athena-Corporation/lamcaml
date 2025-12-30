@@ -8,8 +8,7 @@ Using OCaml as the implementation language is ideal because OCaml incorporates t
 
 # How to Use 
 Each Lambda Expression is to be defined with our internal OCaml logic. 
->For example: 
->
+For example: 
 >> let e = App(Lam("x", Var "x"), Var "y")
 To execute and test the logic, utilize the core functions defined in the untyped.ml file. These tools allow you to evalute, rename, subsitute and pretty print functions. 
 
