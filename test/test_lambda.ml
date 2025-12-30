@@ -15,17 +15,6 @@ let id1 = Lam ("x", (Var "x"))
 let id2 = Lam ("y", (Var "y"))
 *)
 
-(* λ x. x y let us rename y to z
-
-let e1 = Lam ("x", App (Var "x", Var "y"))
-let e2 = Lam ("x", App(Var "x", Var "y"))
-
-
-let () =
-  print_endline(string_of_expr(rename e1 "y" "z"));
-   print_endline(string_of_expr(rename e1 "x" "z"))
-
-*)
 
 (* Ex. 5.(A). Compute the examples in Example 1.5.3.
 
@@ -38,12 +27,23 @@ print_endline (string_of_bool (is_alpha f1 f3));
 (*
   λ x . (x (λ x . x))" an alpha-variant"
   λ z. ([x][x := z])
-*)
-let f3 = App (Var "x", Lam ("x", Var "x"))
-let f2 = App( Var "x", Var "y")
-let e3 = Lam ("x", App (Var "x", Var "y"))
+  
+  let () = print_endline (list_to_string (fun x -> x) (free_vars f2))
 
-let() = print_endline(string_of_bool( equal_expr f2 f3))
+*)
+
+let f3 = Lam("y", Var "x")
+let r = Lam("z", App(Var "u", Var "x"))
+let f2 = App(Lam("x", Var "x"), Var "y")
+let n = Lam ("y", App (Lam("x", Var "x"), Var "y"))
+
+let() = 
+  print_endline(string_of_expr(f3));
+  print_endline(string_of_subst ("x", Var "y"));
+  print_endline(string_of_expr(app_sub ("x", Var "y") (f3)));
+  print_endline(string_of_expr(app_sub ("x", Var "y") (r)))
+
+
 
 
 
@@ -75,20 +75,44 @@ let() = print_endline(string_of_bool( equal_expr f2 f3))
 
 
     *)
-let e3' = App (Var "x", Lam ("x", App (Var "x", Var "y")))
+
 
   (* λ x. x T *)
   (* λ x1 . x1 T *)
 
 
+(* (λ x. x) y ->β (x [x := y]) = y 
+let b_redex = App (Lam ("x", Var "x"), Var "y")
+
+*)
+(* Tests with the Ω term *)
+
+(* Ω = (λ x. x x) (λ x. x x)
+
+  let δ = (λ x . x x).
+
+Ω = (λ x. x x) δ ->β (x x) [x := δ] = δ δ = (λ x. x x) (λ x. x x) = Ω
+
+So this means that Ω ->β Ω in one single step...
+
+Then what will happens is... Ω ->β Ω ->β Ω ->β ∙ ∙ ∙
+
+
+normal form: is an expression that doesn't not reduce forever.
 
 
 
+let rec omega x = omega (omega x)
+
+
+
+
+*)
 
 (*
 
 let() =
-  print_endline (string_of_expr(app_sub ("y", (Var "T")) e3));
+  print_endline (beta b_redex |> string_of_expr);
 
 print_endline(string_of_subst ("y ", f3))
   print_endline (string_of_expr e3');
@@ -115,24 +139,6 @@ let f3 = App (Lam ("z", App (Var "z", Lam ("x", App (Var "z", Var "y")))), Var "
 let f4 = App (Lam ("y", App (Var "y", Lam ("z", App (Var "y", Var "y")))), Var "z")
 let f5 = App (Lam ("z", App (Var "z", Lam ("z", App (Var "z", Var "y")))), Var "z")
 let f6 = App (Lam ("u", App (Var "u", Lam ("z", App (Var "u", Var "y")))), Var "v") *)
-
-
-(* let () =
-    print_endline (list_to_string (fun x -> x) (gen_list f1))
- *)
-
-
-  (*
-  Does not run for some reason terminal freezes, and computer starts to fan out for all the things below
-  print_endline (string_of_bool (is_alpha f1 f2));
-  print_endline (string_of_bool (is_alpha f1 f4));
-  print_endline (string_of_bool (is_alpha f1 f5));   (* should be false but is true*)
-  print_endline (string_of_bool (is_alpha f1 f6));
-  *)
-
-
-
-
 
 
 
