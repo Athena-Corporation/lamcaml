@@ -16,5 +16,5 @@ To execute and test the logic, utilize the core functions defined in the untyped
 To use the project, simply install Dune and execute your functions by running dune test in the terminal. This will automatically compile your code and run any predefined test cases to verify your Lambda Calculus implementation.
 
 # Resources 
-Type Theory and Formal Proof: An Intorduction,  Rob Nederpelt and Hermen Geuvers
-OCaml Programming: Correct + Efficient + Beautiful,  Michael Ryan Clarkson: https://cs3110.github.io/textbook/cover.html
+- Type Theory and Formal Proof: An Intorduction,  Rob Nederpelt and Hermen Geuvers
+- OCaml Programming: Correct + Efficient + Beautiful,  Michael Ryan Clarkson: https://cs3110.github.io/textbook/cover.html
