@@ -8,7 +8,7 @@ type expr =
   Recursively checks if the varibales are equal to each or not using Library [String] and [equal]
 *)
 let rec equal_expr e1 e2 : bool =
-  let open String in (* locally open strings *)
+  let open String in 
   match e1, e2 with
   | Var x, Var y -> equal x y
   | App (l1, r1), App (l2, r2) -> equal_expr l1 l2 && equal_expr r1 r2
@@ -161,10 +161,7 @@ let rename (e: expr) (oldn: string) : expr =
 
 
 (* Renaming: *)
-(*
-It needs
-alpha_variant :
-*)
+(*  It needs alpha_variant : *)
 
 let rename' (e: expr) (oldn: string) (nwn: string): expr =
   let rec aux_rename (expr: expr) (newn: string) : expr =
@@ -215,7 +212,7 @@ Def. Subst. σ : X -> T
 fst : A * B -> A
 snd : A * B -> B
 
-*)
+ ----------------------------------------------------------- Substituion -------------------------------------- *)
 
 type subst = string * expr
 (*
@@ -223,12 +220,20 @@ String = The old variable the is being replaces --> "x"
 Expr = Is the new expression that will be implemented after the subst --> Var "y"
 *)
 
-
+(** [string_of_subst] converts a substitution tuple into a readable string format.
+[Substitution Notation] in Lambda Calculus shows which variable is being replaced by which expression.
+- Ex. [("x", Var "y") --> "[ x := y ]"]
+*)
 let string_of_subst (s : subst) : string =
   match s with
   | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
 
-
+  
+(** [app_sub] performs the actual substitution of an expression into a term while preventing variable capture.
+[Capture-Avoiding Substitution] It uses renaming to make sure that external variables don't get trapped inside a function's body.
+- Ex. [[ x := y ] (λx.x) --> (λx.x)] (No change because x is bound)
+)
+*)
 let rec app_sub (s : subst) (t : expr) : expr =
   match t with
   | Var x as v -> if x = (fst s) then snd s else v
@@ -240,7 +245,6 @@ let rec app_sub (s : subst) (t : expr) : expr =
       let new_body = rename' body x z in
       assert (is_fresh body z) ;
       Lam (z, app_sub s new_body)
-
 
 
 (* Beta reduction (Unrestricted)

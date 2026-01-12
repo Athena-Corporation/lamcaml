@@ -32,16 +32,6 @@ print_endline (string_of_bool (is_alpha f1 f3));
 
 *)
 
-let f3 = Lam("y", Var "x")
-let r = Lam("z", App(Var "u", Var "x"))
-let f2 = App(Lam("x", Var "x"), Var "y")
-let n = Lam ("y", App (Lam("x", Var "x"), Var "y"))
-
-let() = 
-  print_endline(string_of_expr(f3));
-  print_endline(string_of_subst ("x", Var "y"));
-  print_endline(string_of_expr(app_sub ("x", Var "y") (f3)));
-  print_endline(string_of_expr(app_sub ("x", Var "y") (r)))
 
 
 
@@ -120,9 +110,23 @@ print_endline(string_of_subst ("y ", f3))
   print_endline (string_of_expr (rename' e3' "x" "t")) *)
 
 
+let f = Lam("y", Var "u1")
+let f1 = Lam("z", App(Var "u", Var "x"))
+let f2 = App(Lam("x", Var "x"), Var "y")
+let f3 = Lam ("y", App (Lam("x", Var "x"), Var "y"))
 
+let f4 = Lam( "y", App((Lam( "x", Var "x"), Var "y")))
 
+let() = 
+  print_endline(string_of_expr f);
+  print_endline(string_of_expr f3);
+  print_endline(string_of_bool(equal_expr f3 f4));
+  print_endline(string_of_expr(rename f2 "y"));
+  print_endline(string_of_subst ("x", Var "y"));
+  print_endline(string_of_expr f4);
+  print_endline (list_to_string (fun x -> x) (gen_list f4));
 
+  
 
 (*
 let() =
