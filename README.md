@@ -10,8 +10,7 @@ Every programming language is built on a model of computation. The most common i
 Furthermore the lambda calculus is Turing Complete, allowing the user to simulate any algorithm. With the help of beta-reduction lambda expressions can go through step-by-step evaluation to execute an expression. Making Lambda Calculus itself a very small programming language.
 
 ## Implementation: Coupled with a Powerful Functional Programming Language
-λ-calculus is functional because of its ability to use functions as first-class citizens (meaning a function can be assigned as an argument or variable, whilst also being able to be returned from a function). We have decided to use **[OCaml](https://ocaml.org)** in this project because it is a functional language, which employs Algebraic Data Types, Pattern Matching and Recursion which can be used to implement and define the Lambda Functions.
-
+λ-calculus is functional because of its ability to use functions as first-class citizens (meaning a function can be assigned as an argument or variable, whilst also being able to be returned from a function). We have decided to use **[OCaml](https://ocaml.org)** in this project because it is a functional language, which employs Algebraic Data Types, Pattern Matching and Recursion which can be used to implement and define the Lambda Functions. Currently, all the tests are written in a separate executable file. We have hard-coded the test cases into this file, creating a test harness that runs the functions and outputs to the terminal for manual inspection.
 ```ocaml
 type expr =
   | Var of string
@@ -101,7 +100,7 @@ function is_even x = {
 ```
 ## Build Instructions
 
-We use [opam](https://opam.ocaml.org/doc/Install.html) to build ONijn.
+We use [opam](https://opam.ocaml.org/doc/Install.html) to build LamCaml.
 Make sure it is installed on your system before proceeding.
 
 Here's the **dependency** list,
