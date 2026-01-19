@@ -8,7 +8,7 @@ type expr =
   Recursively checks if the varibales are equal to each or not using Library [String] and [equal]
 *)
 let rec equal_expr e1 e2 : bool =
-  let open String in 
+  let open String in
   match e1, e2 with
   | Var x, Var y -> equal x y
   | App (l1, r1), App (l2, r2) -> equal_expr l1 l2 && equal_expr r1 r2
@@ -228,7 +228,7 @@ let string_of_subst (s : subst) : string =
   match s with
   | (x, e) -> "[ " ^ x ^ " := " ^ (string_of_expr e) ^ " ]"
 
-  
+
 (** [app_sub] performs the actual substitution of an expression into a term while preventing variable capture.
 [Capture-Avoiding Substitution] It uses renaming to make sure that external variables don't get trapped inside a function's body.
 - Ex. [[ x := y ] (λx.x) --> (λx.x)] (No change because x is bound)
@@ -270,33 +270,3 @@ let rec beta (t : expr) : expr =
     let beta_subst = (x, arg) in (* [x := arg] *)
     app_sub beta_subst (beta body)
   | App (lhs, rhs) -> App (beta lhs, beta rhs)
-
-
-(*
-Primitive types:
-Booleans: true/false
-Integers: ... -1, 0, 1, ...
-Functions: λ x. p
-Pairs:     (s, t)
-
-Final Product
-
-Values   v, v' ::== x | true | false | λ x. p | Number
-Expressions p,q,r ::== v | p q | if p then q else r | NativeOp | f | (s,t)
-Functions f, g, h :: function f [x₁,..., xₙ] = { p }
-where NativeOp can be:
-It is usually useful to have some operators to each primitive type, e.g.,
-    - and, or, xor, for booleans
-    - addition, subtraction, for integers
-    - recursion for functions (optional for now)
-
-An Example of a program that should be able to define:
-
-function is_even x = {
-  if div_rest (x, 2) = 0
-    then true
-  else
-    false
-  }
-
-*)

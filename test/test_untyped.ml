@@ -27,7 +27,7 @@ print_endline (string_of_bool (is_alpha f1 f3));
 (*
   λ x . (x (λ x . x))" an alpha-variant"
   λ z. ([x][x := z])
-  
+
   let () = print_endline (list_to_string (fun x -> x) (free_vars f2))
 
 *)
@@ -71,7 +71,7 @@ print_endline (string_of_bool (is_alpha f1 f3));
   (* λ x1 . x1 T *)
 
 
-(* (λ x. x) y ->β (x [x := y]) = y 
+(* (λ x. x) y ->β (x [x := y]) = y
 let b_redex = App (Lam ("x", Var "x"), Var "y")
 
 *)
@@ -120,11 +120,19 @@ let e = Var "x"
 let r = App(Var "x", Var "y")
 let g = Lam("x", App(Var "x", Var "y"))
 
-let() = 
-  print_endline(string_of_expr(app_sub ("y", e) (g)));
- 
+(*
 
-  
+  (λ x. x y) z ->β z y
+
+*)
+
+let beta_example = App (g, Var "z")
+
+let() =
+  print_endline ((beta_example) |> beta |> string_of_expr)
+
+
+
 
 (*
 let() =
