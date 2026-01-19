@@ -31,17 +31,19 @@ Its ocaml counterpart is simply:
 ```ocaml
 let e_1 = Var "x"
 ```
- - ⭕ continue the example as I did above...
+To represent a Abstraction we would define the binding variable and the follwing expression, ``e₁ = λx. x ``. In Ocaml it would be:
 ```ocaml
-let e = Var "x"
-let r = App (Var "x", Var "y")
-let g = Lam ("x", App (Var "x", Var "y"))
+let e_2 = Lam ("x", Var "x")
+```
+Finally to representing Application would be just combining 2 expresion togteher, take for instance, ``e₁ = (xy) ``  & ``e₁ = λx. xy ``. In Ocaml it would be:
+```ocaml
+let e_3 = App(Var "x", Var "y")
+let e_4 = Lam ("x", App(Var "x", Var "y"))
 ```
 
-In the file (⭕ tell the reader where the file is.)
-Currently, all the tests are written in a separate executable file.
-We have hard-coded the test cases into this file, creating a test harness that runs the functions and outputs to the terminal for manual inspection.
-See (⭕ which section?) for instructions on how to run those experiments.
+These implmentation are defined in the file ``untyped.ml``.
+Currently, all the tests are written in a separate executable file ``test_lambda.ml``. We have hard-coded the test cases into this file, creating a test harness that runs the functions and outputs to the terminal for manual inspection.
+Refer to the documentation of each function in the untyped.ml file for instructions on how to run those experiments.
 
 ## First Class Functions: The Mechanics of LamCaml
 The past months have been used for creating functions that are able to transform lambda functions. We have implemented functions that allow the user to check for syntactical equality, subterms, free and bound variables.
@@ -154,4 +156,4 @@ dune install
 
 ## Bibliography
 - **[OCaml Programming: Correct + Efficient + Beautiful,  Michael Ryan Clarkson](https://cs3110.github.io/textbook/cover.html)**
-- **[Type Theory and Formal Proof: An Intorduction,  Rob Nederpelt and Hermen Geuvers](https://anggtwu.net/tmp/nederpelt_geuvers__type_theory_and_formal_proof_an_introduction.pdf)**
+- **[Type Theory and Formal Proof: An Intorduction,  Rob Nederpelt and Hermen Geuvers](https://www.cambridge.org/core/books/type-theory-and-formal-proof/0472640AAD34E045C7F140B46A57A67C)**
