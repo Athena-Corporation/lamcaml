@@ -120,16 +120,21 @@ let e = Var "x"
 let r = App(Var "x", Var "y")
 let g = Lam("x", App(Var "x", Var "y"))
 
+
+let() =  print_endline((string_of_expr (rename f "u")));
+
+
+
+
+
 (*
 
   (λ x. x y) z ->β z y
 
 *)
 
-let beta_example = App (g, Var "z")
-
-let() =
-  print_endline ((beta_example) |> beta |> string_of_expr)
+(* let beta_example = App (g, Var "z") 
+let() = print_endline ((beta_example) |> beta |> string_of_expr) *)
 
 
 
