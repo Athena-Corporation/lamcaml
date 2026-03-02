@@ -1,67 +1,60 @@
-type expr  =
+open Name_gen
+
+(* 1. Syntax ---------------------------------------------------------------- *)
+(* Human-readable syntax of the programs *)
+(*
+  p,q,r ::= x | p ∙ q | λ x . p | if p then q else r | k | true | false | BinOp p q | UnaOp p
+*)
+
+(* AST of our language, i.e., the internal representation of a program *)
+type expr =
+  (* λ-calculus *)
   | Var of string
   | App of expr * expr
   | Lam of string * expr
-  | If of expr * expr * expr  
-  | Op of native_op
+  (* λ-calculus + if construction *)
+  | If of expr * expr * expr
+  (* Base types, ints and bools *)
   | Num of int
   | Bool of bool
-and native_op =
+  (* Operators over the base types *)
+  | BinOp of bin_ops * expr * expr
+  | UnaOp of una_ops * expr
+and bin_ops =
   | Add
-  | Sub
+  | Leq
+  | Geq
+and una_ops =
+  | Inv
+  | Not
 
 
-let rec string_of_expr e =
+(* 2. Small-Step Semantics *)
+let is_value e =
   match e with
-  | Var x -> x
-  | App (e1, e2) -> "(" ^ string_of_expr e1 ^ "•" ^ string_of_expr e2 ^ ")"
-  | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
-  | Num x -> string_of_int x
-  | Bool x -> if x = true then "True" else "False"
-  | If (x, y, z) -> "if" ^ string_of_expr x ^ "then" ^ string_of_expr y ^ "else" ^ string_of_expr z 
-  | _ -> failwith "error" 
-
-let is_value e  = 
-  match e with 
   | Bool _ -> true
   | Lam _ -> true
   | Num _ -> true
   | _ -> false
 
-let eval_Op op v1 v2 = 
-  match op, v1, v2 with 
-  | Add, Num x, Num y -> Num (x + y) 
-  | Sub, Num x, Num y -> Num (x - y)
-  | _ -> failwith "error"
-
-
-let rec gen_list (e:expr) : string list = 
-  match e with 
+(* TODO: Renaming before substitution *)
+let rec gen_list (e:expr) : string list =
+  match e with
   | Var x -> x :: []
   | App (l, r) -> gen_list l @ gen_list r @ []
-  | Lam(x, body) -> x ::gen_list body @ []
+  | Lam(x, body) -> x :: gen_list body @ []
   | If(f, s, t) -> gen_list f @ gen_list s @ gen_list t
   | Num n -> string_of_int(n) :: []
   | Bool v -> string_of_bool(v) :: []
-  | Op _ -> "Op" :: []
+  | BinOp (_,e1,e2) -> failwith "not implemented"
+  | UnaOp (_,e) -> failwith "not implemented"
 
-let rec check_var (v: string) (lst: string list) : bool = 
-  match lst with 
-  | [] -> false
-  | h :: t -> h = v || check_var v t 
+(*
+  if (x + y > 0) ...
 
+*)
 
-let rec gen_new_name (opfst: string) (lst: string list) : string =
-  if check_var opfst lst then
-    let rec unique n =
-      let nwn = opfst ^ string_of_int n in
-      if check_var nwn lst then unique (n + 1)
-      else nwn
-    in
-    unique 1
-  else
-    opfst
-
+(* TODO: fix *)
 let rename (e: expr) (oldn: string) : expr =
   let rec aux_rename (expr: expr) (newn: string) : expr =
     if is_value e = false then
@@ -71,19 +64,16 @@ let rename (e: expr) (oldn: string) : expr =
       | If (l, m , r) -> If( aux_rename l newn, aux_rename m newn, aux_rename r newn)
       | _ -> failwith "Type cannot be renamed"
     else
-      match expr with 
+      match expr with
       | Lam (x, body) -> (if x = oldn then expr else Lam (x, aux_rename body newn))
       | _ -> failwith "Type cannot be renamed"
 
   in
-    let u = "u" in 
-    if check_var u (gen_list(e)) then 
+    let u = "u" in
+    if check_var u (gen_list(e)) then
       aux_rename e u
-  else 
+  else
     failwith "fatal error"
-
-
-
 
 (*
 Primitive types:

@@ -1,3 +1,5 @@
+open Name_gen
+
 (** Lambda functions*)
 type expr =
   | Var of string
@@ -95,29 +97,6 @@ let rec gen_list (e: expr) : string list =
   | Var x -> x :: []
   | App (l ,r) -> gen_list l @ gen_list r @ []
   | Lam (x, body) -> x :: gen_list body @ []
-
-(** [check_var] checks and states if a variable is inside a list. Used to check if a variable is present in the variables
-found in a give [expr]
-*)
-let rec check_var var (lst: string list) : bool =
-  match lst with
-  | [] -> false
-  | h :: t -> h = var || check_var var t
-
-(**
-[gen_new_name] will generate a new variable to add into an [expr]; occurs when a variable is not
-[Fresh] in an [expr].
-*)
-let rec gen_new_name (opfst: string) (lst: string list) : string =
-  if check_var opfst lst then
-    let rec unique n =
-      let nwn = opfst ^ string_of_int n in
-      if check_var nwn lst then unique (n + 1)
-      else nwn
-    in
-    unique 1
-  else
-    opfst
 
 (** [is_fresh] checks if the the [name: string] is already present in a given [expr] *)
 let rec is_fresh (e : expr) (name : string) : bool =
