@@ -116,14 +116,14 @@ let f2 = App(Lam("x", Var "x"), Var "y")
 let f3 = Lam ("y", App (Lam("x", Var "x"), Var "y"))
 
 let f4 = Lam( "y", App((Lam( "x", Var "x"), Var "y")))
-let e = Var "x"
+let e = Var "u"
 let r = App(Var "x", Var "y")
-let g = Lam("x", App(Var "x", Var "y"))
+let g = Lam("x", Var "x")
 
-
-let() =  print_endline((string_of_expr (rename f "u")));
-
-
+let() = print_endline(string_of_expr f);
+  print_endline((string_of_expr (rename f3 "u")));
+  print_endline((string_of_expr (app_sub ("y", Var "t") f2)));
+  print_endline((string_of_expr(beta(f2))))
 
 
 

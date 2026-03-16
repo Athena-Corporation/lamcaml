@@ -1,14 +1,22 @@
 open Syntax.Lamcaml
-
-let f = Lam("y", Var "u")
-let f1 = Lam("z", App(Var "u", Var "u1"))
-let f2 = App(Lam("x", Var "x"), Var "y")
-let f3 = Lam ("y", App (Lam("x", Var "x"), Var "y"))
-
-let f4 = Lam( "y", App((Lam( "x", Var "x"), Var "y")))
-let e = Var "x"
-let r = App(Var "x", Var "y")
-let g = Lam("x", App(Var "x", Var "y"))
+open Utils.Tools
 
 
-let() =  print_endline((string_of_expr (rename f "u")));
+let f1 = Bool(true)
+let f2 = App(Var"u", Var "y")
+
+let f4 = App(Lam("x", Var "x"), Var "y")
+let e = If(BinOp(Geq, Num 2, Num 1), Var "x", Var "y")
+let u = If(UnaOp(Not,(BinOp(Geq, Num 2, Num 1))), Var "x", Var "y")
+let f = BinOp(Add, Num 6, Num 7)
+let y = BinOp(Add, UnaOp(Inv,Num 6), Num 7)
+
+
+let()  = 
+  print_endline(string_of_expr(beta f4));
+  print_endline(string_of_expr(beta e)); 
+  print_endline(string_of_expr(beta u));
+  print_endline(string_of_expr(beta f));
+  print_endline(string_of_expr(beta y))
+   
+  
