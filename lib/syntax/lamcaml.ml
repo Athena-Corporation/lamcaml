@@ -44,10 +44,10 @@ let rec string_of_expr e =
   | App (e1, e2) -> "(" ^ string_of_expr e1 ^ "•" ^ string_of_expr e2 ^ ")"
   | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
   | If(f, s, t) -> "If " ^ string_of_expr f ^ " then " ^ string_of_expr s ^ " else " ^ string_of_expr t
-  | Bool(true) -> "True"
+  | Bool(true) -> "True"   
   | Bool(false) ->"False"
   | Num x -> string_of_int x
-  | UnaOp(o, e) -> string_of_unop o ^ "(" ^ string_of_expr e ^ ")"
+  | UnaOp(o, e) -> string_of_unop o ^ "(" ^ string_of_expr e ^ ")"      (*Make the stinrg cse for this a bit better*)
   | BinOp(o, e1, e2) -> "(" ^ string_of_expr e1 ^ string_of_binop o ^ string_of_expr e2 ^ ")"
   and string_of_unop (o : una_ops) =
     match o with
@@ -123,65 +123,38 @@ let rec app_sub (s : subst) (t: expr) : expr =
 
 let rec beta (e : expr) : expr =
   match e with
-  | Var _ as v -> v
-  | Num _ as n -> n
-  | Bool _ as b -> b
+  | Var _  -> e
+  | Num _  -> e
+  | Bool _  -> e
   | Lam (x, body) -> Lam (x, beta body)
 
-  | App (Lam (x, body), arg) ->
-      let subst = (x, arg) in
-      app_sub subst (beta body)
+  | App (l, r) ->
+        (match beta l with
+        | Lam (x, body) -> beta (app_sub (x, beta r) body)
+        | _ -> e)
 
   | BinOp (typ, l, r) ->
       (match (typ, beta l, beta r) with
       | (Add, Num x, Num y) -> Num (x + y)
       | (Leq, Num x, Num y) -> Bool (x <= y)
       | (Geq, Num x, Num y) -> Bool (x >= y)
-      | _ -> failwith "Type error")
+      | _ -> e)
 
   | UnaOp (typ, e) ->
     (match (typ, beta e) with
     | (Inv, Num x) -> Num (-x)
     | (Not, Bool x) -> if x = true then (Bool false) else (Bool true)
-    | _ -> failwith "Type error"
+    | _ -> e
     )
 
   | If(f, s, t) ->
     (match (beta f) with
     | Bool true -> beta s
     | Bool false -> beta t
-    | _ -> failwith "Type error")
-
-  | App (l, r) -> App (beta l, beta r)
-
-
+    | _ -> e)
 
 
 (*
-Call-by-value (eager evaluation) semantics :
-  in every functional application f ∙ arg1 ∙ ... ∙ argn,you first reduce the arguments of the functions to values, then pass the arguments to the function... (intuition...)
-
-
-(β-axiom) for call-by-value (complete the rules...)
-small-step semantics for call-by-value
-
-        s v : expr    is_value(v) = true
-    ---------------------------------------------- (ax)
-              (λ x. s) ∙ v ->ᵥ s[x := v]
-
-          s t u : expr        is_value(s) = true
-    -------------------------------------------------- (If-True)
-          if s then t else u ->ᵥ t
-
-
-          s t u : expr        is_value(s) = false
-    -------------------------------------------------- (If-False)
-          if s then t else u ->ᵥ u
-
-          complete the rules...
-
-
-
 f(x) = x + 1
 f(2) = 2 + 1
 
