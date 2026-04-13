@@ -44,7 +44,7 @@ let rec string_of_expr e =
   | App (e1, e2) -> "(" ^ string_of_expr e1 ^ "•" ^ string_of_expr e2 ^ ")"
   | Lam (x, body) -> "λ" ^ x ^ "." ^ "(" ^ string_of_expr body ^ ")"
   | If(f, s, t) -> "If " ^ string_of_expr f ^ " then " ^ string_of_expr s ^ " else " ^ string_of_expr t
-  | Bool(true) -> "True"   
+  | Bool(true) -> "True"
   | Bool(false) ->"False"
   | Num x -> string_of_int x
   | UnaOp(o, e) -> string_of_unop o ^ "(" ^ string_of_expr e ^ ")"      (*Make the stinrg cse for this a bit better*)
@@ -121,14 +121,44 @@ let rec app_sub (s : subst) (t: expr) : expr =
   | Num _  -> t
 
 
+(* eval : e  ->* value *)
 let rec beta (e : expr) : expr =
   match e with
   | Var _  -> e
   | Num _  -> e
   | Bool _  -> e
-  | Lam (x, body) -> Lam (x, beta body)
+  | Lam (_, _) -> e
+  (*
+        s →β t
+      ----------------------
+        λ x. s →β λ x. t
+
+
+  let f x y =
+    let z = 10 + 10 in
+    x + y
+
+
+  *)
+
 
   | App (l, r) ->
+    (* 1. Test if l is a value.
+        1.1 is_value(l) is true.
+          - match on l to see if l is fo the shape (λ x. M) or (v = which is a number or a boolean).
+            match l with
+            | Lam (x, m) ->
+              1.1.1 : We know that the lhs is a value now we want to know if the "argument" r is also a value.
+                if is_value(r) then
+                  m [x := r] which means that we apply the β substitution!
+                else
+                  App(l, beta r)
+            | _          -> App (l, beta r)
+        1.2 is_value(l) is false.
+          App(beta l, r)
+      *)
+
+
         (match beta l with
         | Lam (x, body) -> beta (app_sub (x, beta r) body)
         | _ -> e)
@@ -138,7 +168,8 @@ let rec beta (e : expr) : expr =
       | (Add, Num x, Num y) -> Num (x + y)
       | (Leq, Num x, Num y) -> Bool (x <= y)
       | (Geq, Num x, Num y) -> Bool (x >= y)
-      | _ -> e)
+      | _ -> e
+      )
 
   | UnaOp (typ, e) ->
     (match (typ, beta e) with
@@ -147,11 +178,28 @@ let rec beta (e : expr) : expr =
     | _ -> e
     )
 
+
+  (*
+  Call-by-value for the If-Then-Else case:
+
+  if e₁ then
+    e₂
+  else
+    e₃
+  Semantics of an if statement: first, reduce e₁ to a value (so that we know the result of the logical test of the if statement) after that you ONLY compute the branch that is correspondent with the result of e₁.
+
+    if ((λ x. x > 3) 1) then e₂ else e₃
+
+  *)
   | If(f, s, t) ->
+    (*
+     *)
+
     (match (beta f) with
     | Bool true -> beta s
     | Bool false -> beta t
     | _ -> e)
+  | _ -> failwith "undefined behavior"
 
 
 (*
@@ -171,6 +219,8 @@ Computation example:
 With If statements
 
 if x > 0 then ((λ x . 2^8) 3)/x else (λ x. 3^10000) 38338
+
+
 
 
 
