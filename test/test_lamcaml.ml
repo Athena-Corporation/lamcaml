@@ -1,27 +1,28 @@
 open Syntax.Lamcaml
 open Utils.Tools
 
-let f x y =
+(* let f x y =
   let z = 10 + 10 in
   (* side-effect *)
   let () = print_endline "I got computed" in
-  x + y
+  x + y *)
 
-let t1 = BinOp(Geq, BinOp(Add, Num 2, Num 3), Num 4)  (* True *)
+(* let t1 = BinOp(Geq, BinOp(Add, Num 2, Num 3), Num 4)  (* True *)
 let t2 = If(BinOp(Geq, Num 1, Num 2), Num 10, Num 20) (* 20 *)
 let t3 = App(Lam("x", Var "x"), Num(6)) (* 6 *)
 let t4 = App(Lam("x", BinOp(Add, Var "x", Num 1)), Var "x") (* 16 *)
 let t5 = App(Lam("x", Lam("y", Var "x")), Var "y") (* λu.y *)
-let t6 = UnaOp(Inv, App(Lam("x", Var "x"), Num(-9))) (* 9 *)
+let t6 = UnaOp(Inv, App(Lam("x", Var "x"), Num(-9))) 9 *)
 
-let()  =
-  print_endline(string_of_expr(beta t1));
-  print_endline(string_of_expr(beta t2));
-  (* print_endline(string_of_expr(beta t3)); *)
-  print_endline(string_of_expr(beta t4));
-  (* print_endline(string_of_expr(beta t5)); *)
-  (* print_endline(string_of_expr(beta t6)); *)
-  (* (Int.max_int + 1) |> string_of_int |> print_endline; *)
+let e = App(Lam("y", BinOp(Add, Var "y", Num 1)), Var "x" )
+let t5 = App(Lam("x", Lam("y", Var "x")), Var "y") (* λu.y *)
+let t2 = If(BinOp(Geq, Num 1, Num 2), Num 10, Num 20) (* 20 *)
+
+let()  = 
+  print_endline (string_of_expr  (e));
+  print_endline (string_of_expr (t5));  
+  print_endline (string_of_expr (beta(t2)));
+  
 
 
 

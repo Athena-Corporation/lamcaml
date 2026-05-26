@@ -142,7 +142,19 @@ let rec beta (e : expr) : expr =
   *)
 
 
-  | App (l, r) ->
+| App (l, r) ->
+      if is_value l then 
+        match l with 
+        | Lam (x, body) -> 
+            if is_value r then
+              beta (app_sub (x, r) body) 
+            else 
+              App (l, beta r)
+        | _ ->    
+            App (l, beta r) 
+      else
+        App (beta l, r)                  
+
     (* 1. Test if l is a value.
         1.1 is_value(l) is true.
           - match on l to see if l is fo the shape (λ x. M) or (v = which is a number or a boolean).
@@ -159,24 +171,28 @@ let rec beta (e : expr) : expr =
       *)
 
 
-        (match beta l with
-        | Lam (x, body) -> beta (app_sub (x, beta r) body)
-        | _ -> e)
-
   | BinOp (typ, l, r) ->
-      (match (typ, beta l, beta r) with
-      | (Add, Num x, Num y) -> Num (x + y)
-      | (Leq, Num x, Num y) -> Bool (x <= y)
-      | (Geq, Num x, Num y) -> Bool (x >= y)
-      | _ -> e
-      )
+      if is_value l then
+        if is_value r then
+          match (typ, l, r) with
+          | (Add, Num x, Num y) -> Num (x + y)
+          | (Leq, Num x, Num y) -> Bool (x <= y)
+          | (Geq, Num x, Num y) -> Bool (x >= y)
+          | _ -> failwith "Type Error: Unsupported operation or types"
+        else
+          BinOp (typ, l, beta r) 
+      else
+        BinOp (typ, beta l, r)  
 
-  | UnaOp (typ, e) ->
-    (match (typ, beta e) with
+  | UnaOp (typ, e) -> 
+    if is_value e then
+    (match (typ, e) with
     | (Inv, Num x) -> Num (-x)
     | (Not, Bool x) -> if x = true then (Bool false) else (Bool true)
     | _ -> e
     )
+    else
+     UnaOp(typ, beta e) 
 
 
   (*
@@ -186,20 +202,28 @@ let rec beta (e : expr) : expr =
     e₂
   else
     e₃
-  Semantics of an if statement: first, reduce e₁ to a value (so that we know the result of the logical test of the if statement) after that you ONLY compute the branch that is correspondent with the result of e₁.
+  Semantics of an if statement: first, reduce e₁ to a value
+  (so that we know the result of the logical test of the if statement) after that you ONLY
+   compute the branch that is correspondent with the result of e₁.
 
     if ((λ x. x > 3) 1) then e₂ else e₃
 
   *)
   | If(f, s, t) ->
-    (*
-     *)
+    if is_value f then
+      match f with
+      | Bool true -> beta s 
+      | Bool false -> beta t
+      | _ -> failwith "Type Error: Has to reduce to a Boolean"    
+    else
+      If(beta f, s, t)
 
+(* 
     (match (beta f) with
     | Bool true -> beta s
     | Bool false -> beta t
     | _ -> e)
-  | _ -> failwith "undefined behavior"
+  | _ -> failwith "undefined behavior" *)
 
 
 (*
