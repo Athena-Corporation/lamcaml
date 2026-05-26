@@ -143,17 +143,17 @@ let rec beta (e : expr) : expr =
 
 
 | App (l, r) ->
-      if is_value l then 
-        match l with 
-        | Lam (x, body) -> 
+      if is_value l then
+        match l with
+        | Lam (x, body) ->
             if is_value r then
-              beta (app_sub (x, r) body) 
-            else 
+              beta (app_sub (x, r) body)
+            else
               App (l, beta r)
-        | _ ->    
-            App (l, beta r) 
+        | _ ->
+            App (l, beta r)
       else
-        App (beta l, r)                  
+        App (beta l, r)
 
     (* 1. Test if l is a value.
         1.1 is_value(l) is true.
@@ -180,11 +180,11 @@ let rec beta (e : expr) : expr =
           | (Geq, Num x, Num y) -> Bool (x >= y)
           | _ -> failwith "Type Error: Unsupported operation or types"
         else
-          BinOp (typ, l, beta r) 
+          BinOp (typ, l, beta r)
       else
-        BinOp (typ, beta l, r)  
+        BinOp (typ, beta l, r)
 
-  | UnaOp (typ, e) -> 
+  | UnaOp (typ, e) ->
     if is_value e then
     (match (typ, e) with
     | (Inv, Num x) -> Num (-x)
@@ -192,7 +192,7 @@ let rec beta (e : expr) : expr =
     | _ -> e
     )
     else
-     UnaOp(typ, beta e) 
+     UnaOp(typ, beta e)
 
 
   (*
@@ -212,13 +212,15 @@ let rec beta (e : expr) : expr =
   | If(f, s, t) ->
     if is_value f then
       match f with
-      | Bool true -> beta s 
+      | Bool true -> beta s
       | Bool false -> beta t
-      | _ -> failwith "Type Error: Has to reduce to a Boolean"    
+      | _ -> failwith "Type Error: Has to reduce to a Boolean"
     else
-      If(beta f, s, t)
+      (* failwith "here" *)
+      beta (If(beta f, s, t))
 
-(* 
+
+(*
     (match (beta f) with
     | Bool true -> beta s
     | Bool false -> beta t
@@ -294,3 +296,4 @@ function is_even x = {
 (* TASK 2. Define the structural operational semantics of this language.
     - small-step semantics.
 *)
+
